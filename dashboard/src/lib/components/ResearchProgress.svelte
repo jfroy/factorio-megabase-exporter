@@ -20,20 +20,21 @@
 	});
 
 	// Progress history tracking for better time estimation
+	// Based on StatsGui's rolling average algorithm
 	interface ProgressEntry {
-		timestamp: number;
+		gameTick: number; // Use game tick instead of wall-clock time
 		progress: number;
 		techName: string;
 		techLevel: number;
 	}
 
 	let progressHistory = $state<ProgressEntry[]>([]);
-	const MAX_HISTORY = 30; // Keep last 30 progress updates (~2.5 minutes at 5 second intervals)
+	const MAX_HISTORY = 30; // Keep last 30 progress updates (~5 minutes at 10 second intervals)
 	let lastTrackedTechId = $state<string | null>(null);
 
 	// Track progress history using $effect
 	$effect(() => {
-		if (currentResearch) {
+		if (currentResearch && stats) {
 			// Check if research changed
 			const currentTechId = `${currentResearch.name}_${currentResearch.level}`;
 
@@ -44,18 +45,18 @@
 			}
 
 			// Add current progress to history if it has progress data
-			// Only add if this is a new progress value (not already tracked)
-			if (currentResearch.progress !== undefined) {
+			// Use the game tick from stats data (updated every 600 ticks by the mod)
+			if (currentResearch.progress !== undefined && stats.timestamp) {
 				const lastEntry = progressHistory[progressHistory.length - 1];
 				const shouldAdd = !lastEntry || 
-					lastEntry.progress !== currentResearch.progress ||
-					Date.now() - lastEntry.timestamp > 1000; // At least 1 second apart
+					lastEntry.gameTick !== stats.timestamp || // New game tick
+					lastEntry.progress !== currentResearch.progress; // Progress changed
 				
 				if (shouldAdd) {
 					progressHistory = [
 						...progressHistory,
 						{
-							timestamp: Date.now(),
+							gameTick: stats.timestamp,
 							progress: currentResearch.progress,
 							techName: currentResearch.name,
 							techLevel: currentResearch.level
@@ -67,6 +68,7 @@
 	});
 
 	// Calculate estimated time based on progress history
+	// Uses rolling average algorithm inspired by StatsGui for more stable predictions
 	let estimatedTime = $derived.by(() => {
 		if (!currentResearch || currentResearch.progress === undefined || currentResearch.progress >= 1) {
 			return null;
@@ -76,54 +78,46 @@
 			return null; // Need at least 2 data points
 		}
 
-		// Use at least 5 data points for stability, or all available if less
-		const minDataPoints = Math.min(5, progressHistory.length);
-		if (progressHistory.length < minDataPoints) {
-			return null;
+		// Calculate time estimates from consecutive sample pairs using rolling average
+		let totalEstimatedTicks = 0;
+		let validSampleCount = 0;
+
+		for (let i = 1; i < progressHistory.length; i++) {
+			const previousSample = progressHistory[i - 1];
+			const currentSample = progressHistory[i];
+
+			// Only compare samples from the same technology
+			const sameTech = 
+				previousSample.techName === currentSample.techName &&
+				previousSample.techLevel === currentSample.techLevel;
+
+			if (sameTech) {
+				// Use game ticks directly (1 tick = 1/60 second)
+				const tickDiff = currentSample.gameTick - previousSample.gameTick;
+				const progressDiff = currentSample.progress - previousSample.progress;
+
+				// Only use samples where progress actually increased
+				if (progressDiff > 0 && tickDiff > 0) {
+					// Calculate speed: how much progress per tick
+					const progressPerTick = progressDiff / tickDiff;
+					
+					// Calculate estimated ticks remaining from this sample
+					const remainingProgress = 1 - currentSample.progress;
+					const estimatedTicks = remainingProgress / progressPerTick;
+					
+					totalEstimatedTicks += estimatedTicks;
+					validSampleCount++;
+				}
+			}
 		}
 
-		// Calculate average progress rate from history
-		// Use the oldest 1/3 and newest 1/3 to reduce noise from intermediate fluctuations
-		const thirdSize = Math.floor(progressHistory.length / 3);
-		const useFullHistory = progressHistory.length <= 10;
-		
-		let oldest, newest;
-		if (useFullHistory) {
-			oldest = progressHistory[0];
-			newest = progressHistory[progressHistory.length - 1];
-		} else {
-			// Average the first third and last third
-			const firstThird = progressHistory.slice(0, thirdSize);
-			const lastThird = progressHistory.slice(-thirdSize);
-			
-			const avgFirst = firstThird.reduce((sum, e) => sum + e.progress, 0) / firstThird.length;
-			const avgLast = lastThird.reduce((sum, e) => sum + e.progress, 0) / lastThird.length;
-			
-			oldest = { 
-				...firstThird[Math.floor(thirdSize / 2)], 
-				progress: avgFirst,
-				timestamp: firstThird[0].timestamp
-			};
-			newest = { 
-				...lastThird[Math.floor(thirdSize / 2)], 
-				progress: avgLast,
-				timestamp: lastThird[lastThird.length - 1].timestamp
-			};
-		}
-		
-		const timeDiff = (newest.timestamp - oldest.timestamp) / 1000; // seconds
-		const progressDiff = newest.progress - oldest.progress;
-
-		if (timeDiff <= 0 || progressDiff <= 0) {
-			return null;
+		// Return rolling average if we have valid samples
+		if (validSampleCount > 0) {
+			const avgEstimatedTicks = totalEstimatedTicks / validSampleCount;
+			return avgEstimatedTicks;
 		}
 
-		const progressPerSecond = progressDiff / timeDiff;
-		const remainingProgress = 1 - newest.progress;
-		const secondsRemaining = remainingProgress / progressPerSecond;
-		
-		// Convert seconds to game ticks (60 ticks per second)
-		return secondsRemaining * 60;
+		return null;
 	});
 
 	let progressPercent = $derived(currentResearch?.progress ? (currentResearch.progress * 100).toFixed(1) : '0');
@@ -174,7 +168,7 @@
 						<span class="stat-value">
 						{#if estimatedTime !== null}
 							{formatTime(estimatedTime)}
-						{:else if progressHistory.length < 5}
+						{:else if progressHistory.length < 2}
 							<span class="calculating">Calculating...</span>
 							{:else}
 								∞
