@@ -121,8 +121,8 @@
 	});
 
 	let progressPercent = $derived(currentResearch?.progress ? (currentResearch.progress * 100).toFixed(1) : '0');
-	let displayName = $derived(currentResearch ? prettifyResearchName(currentResearch.name) : 'No Active Research');
 	let level = $derived(currentResearch?.level || 1);
+	let displayName = $derived(currentResearch ? prettifyResearchName(currentResearch.name) : 'No Active Research');
 	let techIconUrl = $derived(currentResearch ? getTechnologyAssetUrl(currentResearch.name) : '');
 </script>
 
@@ -144,10 +144,9 @@
 					</div>
 				{/if}
 				<div class="tech-details">
-					<div class="tech-name">{displayName}</div>
-					{#if level > 1}
-						<div class="tech-level">Level {level}</div>
-					{/if}
+					<div class="tech-name">
+						{displayName}{#if level > 1}&nbsp;<span class="tech-level">{level}</span>{/if}
+					</div>
 				</div>
 			</div>
 			
@@ -264,8 +263,6 @@
 
 	.tech-level {
 		color: #ffcc00;
-		font-family: monospace;
-		font-size: 0.9rem;
 	}
 
 	.progress-bar {

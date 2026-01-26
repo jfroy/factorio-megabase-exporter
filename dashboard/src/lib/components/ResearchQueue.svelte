@@ -19,10 +19,9 @@
 					/>
 				</div>
 				<div class="info">
-					<div class="name">{prettifyResearchName(research.name)}</div>
-					{#if research.level > 1}
-						<div class="level">Level {research.level}</div>
-					{/if}
+					<div class="name">
+						{prettifyResearchName(research.name)}{#if research.level > 1}&nbsp;<span class="level">{research.level}</span>{/if}
+					</div>
 				</div>
 			</div>
 		{/each}
@@ -117,7 +116,6 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
 	}
 
 	.name {
@@ -129,8 +127,6 @@
 
 	.level {
 		color: #ffcc00;
-		font-family: monospace;
-		font-size: 0.75rem;
 	}
 
 	.empty {
