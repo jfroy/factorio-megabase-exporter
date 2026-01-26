@@ -4,6 +4,7 @@
 	import { historyStore } from '../stores/statsStore';
 	import { getScienceColor } from '../utils/chartConfig';
 	import { defaultChartOptions } from '../utils/chartConfig';
+	import { getSciencePackShortName } from '../utils/formatters';
 	import type { SciencePackType } from '../types/stats';
 
 	Chart.register(...registerables);
@@ -74,13 +75,13 @@
 				return total;
 			});
 
-			const color = getScienceColor(packName as SciencePackType);
-			const prettyName = packName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-			
-			// Consumption dataset (solid line)
-			datasets.push({
-				label: `${prettyName} (Consumed)`,
-				data: consumptionData,
+		const color = getScienceColor(packName as SciencePackType);
+		const prettyName = getSciencePackShortName(packName);
+		
+		// Consumption dataset (solid line)
+		datasets.push({
+			label: `${prettyName} (Consumed)`,
+			data: consumptionData,
 				borderColor: color,
 				backgroundColor: color + '20',
 				borderWidth: 2,

@@ -4,6 +4,7 @@
 	import { historyStore } from '../stores/statsStore';
 	import { getScienceColor } from '../utils/chartConfig';
 	import { defaultChartOptions } from '../utils/chartConfig';
+	import { getSciencePackShortName } from '../utils/formatters';
 	import type { SciencePackType } from '../types/stats';
 
 	Chart.register(...registerables);
@@ -55,11 +56,11 @@
 				return total;
 			});
 
-			const color = getScienceColor(packName as SciencePackType);
-			
-			datasets.push({
-				label: packName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-				data,
+		const color = getScienceColor(packName as SciencePackType);
+		
+		datasets.push({
+			label: getSciencePackShortName(packName),
+			data,
 				borderColor: color,
 				backgroundColor: color + '20',
 				borderWidth: 2,
