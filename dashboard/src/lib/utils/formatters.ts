@@ -59,7 +59,7 @@ export function formatTime(ticks: number): string {
  * Format a timestamp to a readable date/time string
  */
 export function formatTimestamp(timestamp: number): string {
-	return new Date(timestamp).toLocaleTimeString();
+	return new Date(timestamp).toLocaleTimeString('en-US', { hour12: false });
 }
 
 /**
