@@ -58,15 +58,34 @@ const server = Bun.serve({
 			});
 		}
 
-		// API endpoint for technology assets
-		if (url.pathname.startsWith('/api/assets/technology/')) {
-			const assetName = url.pathname.replace('/api/assets/technology/', '');
+	// API endpoint for technology assets
+	if (url.pathname.startsWith('/api/assets/technology/')) {
+		const assetName = url.pathname.replace('/api/assets/technology/', '');
+		
+		// Try each tech asset path
+		for (const techPath of TECH_ASSET_PATHS) {
+			const assetFile = Bun.file(join(techPath, assetName));
+			if (await assetFile.exists()) {
+				return new Response(assetFile, {
+					headers: {
+						'Access-Control-Allow-Origin': '*',
+						'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+					}
+				});
+			}
+		}
+		
+		// Fallback: try stripping the number suffix (e.g., worker-robot-speed-7.png -> worker-robot-speed.png)
+		// This handles technologies that share the same asset file
+		const match = assetName.match(/^(.+)-(\d+)(\.png)$/);
+		if (match) {
+			const [, baseName, , extension] = match;
+			const fallbackAssetName = `${baseName}${extension}`;
 			
-			// Try each tech asset path
 			for (const techPath of TECH_ASSET_PATHS) {
-				const assetFile = Bun.file(join(techPath, assetName));
-				if (await assetFile.exists()) {
-					return new Response(assetFile, {
+				const fallbackAssetFile = Bun.file(join(techPath, fallbackAssetName));
+				if (await fallbackAssetFile.exists()) {
+					return new Response(fallbackAssetFile, {
 						headers: {
 							'Access-Control-Allow-Origin': '*',
 							'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
@@ -74,9 +93,10 @@ const server = Bun.serve({
 					});
 				}
 			}
-			
-			return new Response('Asset not found', { status: 404 });
 		}
+		
+		return new Response('Asset not found', { status: 404 });
+	}
 
 		// Serve static files from build directory
 		try {
