@@ -5,18 +5,18 @@ import type { SciencePackType } from '../types/stats';
  * Color mapping for science packs
  */
 export const SCIENCE_COLORS: Record<SciencePackType, string> = {
-	'automation-science-pack': '#cc0000',
-	'logistic-science-pack': '#00cc00',
-	'military-science-pack': '#666666',
-	'chemical-science-pack': '#0099ff',
-	'production-science-pack': '#cc00ff',
-	'utility-science-pack': '#ffcc00',
-	'space-science-pack': '#ffffff',
-	'metallurgic-science-pack': '#cd7f32',
-	'electromagnetic-science-pack': '#00ffff',
-	'agricultural-science-pack': '#99ff00',
-	'cryogenic-science-pack': '#b0e0ff',
-	'promethium-science-pack': '#ff1493',
+	'automation-science-pack': '#D12D2D',
+	'logistic-science-pack': '#36A129',
+	'military-science-pack': '#4E5154',
+	'chemical-science-pack': '#27A9D1',
+	'production-science-pack': '#9E33D1',
+	'utility-science-pack': '#D1A527',
+	'space-science-pack': '#C1C1C1',
+	'metallurgic-science-pack': '#FF9E21',
+	'electromagnetic-science-pack': '#FF39B0',
+	'agricultural-science-pack': '#B6D11B',
+	'cryogenic-science-pack': '#2143D1',
+	'promethium-science-pack': '#2C264D',
 	'science': '#ff7700' // Special eSPM color
 };
 
