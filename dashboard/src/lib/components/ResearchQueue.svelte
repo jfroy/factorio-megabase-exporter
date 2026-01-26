@@ -1,14 +1,33 @@
 <script lang="ts">
-	import { researchQueueStore } from '../stores/statsStore';
+	import { researchQueueStore, currentResearchStore } from '../stores/statsStore';
 	import { prettifyResearchName } from '../utils/formatters';
 	import { getTechnologyAssetUrl } from '../utils/assets';
+
+	// Compute adjusted levels for duplicate technologies in the queue
+	// Note: researchQueueStore excludes the current research (position 0), so we need to
+	// check if the current research matches any queued research to adjust levels properly
+	let adjustedQueue = $derived($researchQueueStore.map((research, index) => {
+		// Count occurrences before this position in the queue (slice(1) of full queue)
+		const seenBeforeInQueue = $researchQueueStore.slice(0, index).filter(r => r.name === research.name).length;
+		
+		// Check if current research matches this technology (that's the first occurrence)
+		const isCurrentResearch = $currentResearchStore && $currentResearchStore.name === research.name;
+		const currentResearchOffset = isCurrentResearch ? 1 : 0;
+		
+		const adjustedLevel = research.level + seenBeforeInQueue + currentResearchOffset;
+		
+		return {
+			...research,
+			displayLevel: adjustedLevel
+		};
+	}));
 </script>
 
 <div class="research-queue">
 	<h3>Research Queue ({$researchQueueStore.length})</h3>
 	
 	<div class="queue-list">
-		{#each $researchQueueStore as research (research.position)}
+		{#each adjustedQueue as research (research.position)}
 			<div class="queue-item">
 				<div class="position">{research.position}</div>
 				<div class="tech-icon-wrapper">
@@ -20,7 +39,7 @@
 				</div>
 				<div class="info">
 					<div class="name">
-						{prettifyResearchName(research.name)}{#if research.level > 1}&nbsp;<span class="level">{research.level}</span>{/if}
+						{prettifyResearchName(research.name)}{#if research.displayLevel > 1}&nbsp;<span class="level">{research.displayLevel}</span>{/if}
 					</div>
 				</div>
 			</div>
