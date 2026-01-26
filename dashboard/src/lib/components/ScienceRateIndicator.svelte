@@ -10,6 +10,9 @@
 		const groups = new Map<string, { production: number; consumption: number; color: string; qualities: Set<string> }>();
 		
 		$parsedSciencePacksStore.forEach((pack) => {
+			// Skip "science" type (eSPM)
+			if (pack.type === 'science') return;
+			
 			if (!groups.has(pack.type)) {
 				groups.set(pack.type, {
 					production: 0,
@@ -32,7 +35,7 @@
 		return Array.from(groups.entries())
 			.filter(([_, data]) => data.production > 0 || data.consumption > 0)
 			.map(([type, data]) => ({ type, ...data }))
-			.sort((a, b) => b.production - a.production);
+			.sort((a, b) => a.type.localeCompare(b.type));
 	});
 
 	function getMaxRate(packs: any[]): number {
@@ -121,9 +124,9 @@
 	}
 
 	.rates-grid {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.75rem;
 	}
 
 	.rate-row {

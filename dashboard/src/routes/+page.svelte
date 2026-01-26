@@ -3,8 +3,7 @@
 	import { statsStore, lastUpdateStore, errorStore, startStatsPolling, refreshStats } from '../lib/stores/statsStore';
 	import { formatTime, formatTimestamp } from '../lib/utils/formatters';
 	
-	import ScienceProductionChart from '../lib/components/ScienceProductionChart.svelte';
-	import ScienceConsumptionChart from '../lib/components/ScienceConsumptionChart.svelte';
+	import ScienceCombinedChart from '../lib/components/ScienceCombinedChart.svelte';
 	import ScienceRateIndicator from '../lib/components/ScienceRateIndicator.svelte';
 	import ResearchProgress from '../lib/components/ResearchProgress.svelte';
 	import ResearchQueue from '../lib/components/ResearchQueue.svelte';
@@ -70,21 +69,18 @@
 
 	<!-- Main Content -->
 	<main class="main-content">
-		<!-- Left Column: Charts -->
+		<!-- Left Column: Research & Chart -->
 		<div class="left-column">
-			<div class="chart-card">
-				<ScienceProductionChart />
-			</div>
-			<div class="chart-card">
-				<ScienceConsumptionChart />
-			</div>
-		</div>
-
-		<!-- Right Column: Research & Rates -->
-		<div class="right-column">
 			<div class="research-card">
 				<ResearchProgress />
 			</div>
+			<div class="chart-card">
+				<ScienceCombinedChart />
+			</div>
+		</div>
+
+		<!-- Right Column: Queue & Rates -->
+		<div class="right-column">
 			<div class="queue-card">
 				<ResearchQueue />
 			</div>
@@ -216,7 +212,7 @@
 		margin: 0 auto;
 		padding: 2rem;
 		display: grid;
-		grid-template-columns: 1fr 400px;
+		grid-template-columns: 1fr 500px;
 		gap: 1.5rem;
 	}
 
@@ -246,7 +242,8 @@
 		border: 1px solid rgba(255, 119, 0, 0.3);
 		border-radius: 8px;
 		backdrop-filter: blur(5px);
-		min-height: 200px;
+		padding: 0;
+		overflow: hidden;
 	}
 
 	.queue-card {
