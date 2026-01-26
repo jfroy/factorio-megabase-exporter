@@ -17,6 +17,16 @@ const config = {
 		}),
 		paths: {
 			base: ''
+		},
+		prerender: {
+			handleHttpError: ({ path, referrer, message }) => {
+				// Ignore favicon.png 404 during prerendering - it's served by the custom server at runtime
+				if (path === '/favicon.png') {
+					return;
+				}
+				// Re-throw other errors
+				throw new Error(message);
+			}
 		}
 	}
 };

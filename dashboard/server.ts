@@ -11,6 +11,7 @@ const TECH_ASSET_PATHS = [
 	join(FACTORIO_PATH, 'data', 'base', 'graphics', 'technology'),
 	join(FACTORIO_PATH, 'data', 'space-age', 'graphics', 'technology')
 ];
+const FAVICON_PATH = join(FACTORIO_PATH, 'data', 'core', 'graphics', 'factorio.png');
 const BUILD_DIR = join(import.meta.dir, 'build');
 
 let cachedStats: string | null = null;
@@ -56,6 +57,20 @@ const server = Bun.serve({
 					'Cache-Control': 'no-cache'
 				}
 			});
+		}
+
+		// Serve favicon from game data
+		if (url.pathname === '/favicon.png') {
+			const faviconFile = Bun.file(FAVICON_PATH);
+			if (await faviconFile.exists()) {
+				return new Response(faviconFile, {
+					headers: {
+						'Content-Type': 'image/png',
+						'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+					}
+				});
+			}
+			return new Response('Favicon not found', { status: 404 });
 		}
 
 	// API endpoint for technology assets
