@@ -202,7 +202,6 @@
 	}
 
 	.header {
-		background: rgba(255, 119, 0, 0.2);
 		border-bottom: 1px solid rgba(255, 119, 0, 0.3);
 		padding: 0.75rem 1rem;
 	}

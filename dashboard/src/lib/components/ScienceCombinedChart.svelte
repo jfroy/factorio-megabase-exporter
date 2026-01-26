@@ -131,14 +131,7 @@
 				plugins: {
 					...defaultChartOptions.plugins,
 					title: {
-						display: true,
-						text: 'Science Pack Production & Consumption (items/minute)',
-						color: '#e0e0e0',
-						font: {
-							family: 'monospace',
-							size: 14,
-							weight: 'bold'
-						}
+						display: false
 					},
 					tooltip: {
 						enabled: false,
@@ -312,17 +305,36 @@
 	});
 </script>
 
-<div class="chart-container">
-	<canvas bind:this={canvas}></canvas>
-	{#if !$historyStore.length}
-		<div class="loading">Waiting for data...</div>
-	{/if}
+<div class="science-chart">
+	<h3>Science Pack Production & Consumption</h3>
+	<div class="chart-container">
+		<canvas bind:this={canvas}></canvas>
+		{#if !$historyStore.length}
+			<div class="loading">Waiting for data...</div>
+		{/if}
+	</div>
 </div>
 
 <style>
-	.chart-container {
-		width: 100%;
+	.science-chart {
+		display: flex;
+		flex-direction: column;
 		height: 100%;
+	}
+
+	h3 {
+		margin: 0 0 1rem 0;
+		color: #ff7700;
+		font-family: monospace;
+		font-size: 1.1rem;
+		text-align: center;
+		border-bottom: 1px solid rgba(255, 119, 0, 0.3);
+		padding-bottom: 0.5rem;
+	}
+
+	.chart-container {
+		flex: 1;
+		width: 100%;
 		min-height: 300px;
 		position: relative;
 	}
