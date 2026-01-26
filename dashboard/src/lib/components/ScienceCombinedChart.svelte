@@ -226,8 +226,49 @@
 							// Position tooltip
 							const position = context.chart.canvas.getBoundingClientRect();
 							tooltipEl.style.opacity = '1';
-							tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
-							tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+							
+							// Calculate tooltip position relative to the mouse/caret
+							const tooltipX = position.left + window.pageXOffset + tooltipModel.caretX;
+							const tooltipY = position.top + window.pageYOffset + tooltipModel.caretY;
+							
+							// Get tooltip dimensions (need to render first to measure)
+							tooltipEl.style.left = tooltipX + 'px';
+							tooltipEl.style.top = tooltipY + 'px';
+							
+							// Wait for layout to get dimensions
+							const rect = tooltipEl.getBoundingClientRect();
+							const tooltipWidth = rect.width;
+							const tooltipHeight = rect.height;
+							
+							// Calculate optimal position with viewport boundaries
+							const padding = 10; // Padding from viewport edges
+							const offset = 15; // Offset from cursor
+							
+							let finalX = tooltipX + offset;
+							let finalY = tooltipY + offset;
+							
+							// Check right boundary
+							if (finalX + tooltipWidth + padding > window.innerWidth) {
+								finalX = tooltipX - tooltipWidth - offset;
+							}
+							
+							// Check bottom boundary
+							if (finalY + tooltipHeight + padding > window.innerHeight + window.pageYOffset) {
+								finalY = tooltipY - tooltipHeight - offset;
+							}
+							
+							// Check left boundary
+							if (finalX < padding) {
+								finalX = padding;
+							}
+							
+							// Check top boundary
+							if (finalY < window.pageYOffset + padding) {
+								finalY = window.pageYOffset + padding;
+							}
+							
+							tooltipEl.style.left = finalX + 'px';
+							tooltipEl.style.top = finalY + 'px';
 						}
 					},
 					legend: {
