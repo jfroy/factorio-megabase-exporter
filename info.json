@@ -1,0 +1,10 @@
+{
+  "name": "factorio-megabase-exporter",
+  "version": "1.0.0",
+  "title": "Factorio Megabase Exporter",
+  "author": "jfroy",
+  "homepage": "",
+  "description": "Exports science production/consumption and research statistics to JSON file every 10 seconds for external monitoring",
+  "factorio_version": "2.0",
+  "dependencies": ["base >= 2.0"]
+}
