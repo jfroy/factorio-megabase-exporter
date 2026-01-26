@@ -32,12 +32,6 @@ local QUALITIES = {
   "legendary"
 }
 
--- Initialize global data
-local function init_global()
-  global = global or {}
-  global.last_update_tick = 0
-end
-
 -- Get science statistics for a force
 local function get_science_stats(force)
   local stats = {
@@ -133,16 +127,5 @@ local function export_statistics()
   helpers.write_file("megabase-exporter/stats.json", json_output, false)
 end
 
--- Main tick handler
-local function on_tick(event)
-  -- Check if it's time to update
-  if event.tick - global.last_update_tick >= UPDATE_INTERVAL then
-    global.last_update_tick = event.tick
-    export_statistics()
-  end
-end
-
 -- Register event handlers
-script.on_init(init_global)
-script.on_load(init_global)
-script.on_event(defines.events.on_tick, on_tick)
+script.on_nth_tick(UPDATE_INTERVAL, export_statistics)
