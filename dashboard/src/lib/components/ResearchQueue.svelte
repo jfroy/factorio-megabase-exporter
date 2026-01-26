@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { researchQueueStore } from '../stores/statsStore';
+	import { researchQueueStore } from '../stores/statsStore.svelte';
 	import { prettifyResearchName } from '../utils/formatters';
+	
+	let queue = $derived(researchQueueStore.value);
 </script>
 
 <div class="research-queue">
-	<h3>Research Queue ({$researchQueueStore.length})</h3>
+	<h3>Research Queue ({queue.length})</h3>
 	
 	<div class="queue-list">
-		{#each $researchQueueStore as research (research.position)}
+		{#each queue as research (research.position)}
 			<div class="queue-item">
 				<div class="position">{research.position}</div>
 				<div class="info">
@@ -19,7 +21,7 @@
 			</div>
 		{/each}
 		
-		{#if $researchQueueStore.length === 0}
+		{#if queue.length === 0}
 			<div class="empty">No queued research</div>
 		{/if}
 	</div>

@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { currentResearchStore, statsStore } from '../stores/statsStore';
+	import { currentResearchStore, statsStore } from '../stores/statsStore.svelte';
 	import { formatTime, formatNumberWithCommas, prettifyResearchName } from '../utils/formatters';
-	import { onMount } from 'svelte';
 
-	$: currentResearch = $currentResearchStore;
-	$: stats = $statsStore;
+	let currentResearch = $derived(currentResearchStore.value);
+	let stats = $derived(statsStore.value);
 	
 	// Calculate eSPM from science_normal production rate
-	$: eSPM = (() => {
+	let eSPM = $derived.by(() => {
 		if (!stats) return 0;
 		
 		const scienceNormalKey = 'science_normal';
@@ -15,7 +14,7 @@
 			return stats.science_packs.rate_1m[scienceNormalKey].produced;
 		}
 		return 0;
-	})();
+	});
 
 	// Progress history tracking for better time estimation
 	interface ProgressEntry {
@@ -25,36 +24,39 @@
 		techLevel: number;
 	}
 
-	let progressHistory: ProgressEntry[] = [];
+	let progressHistory = $state<ProgressEntry[]>([]);
 	const MAX_HISTORY = 30; // Keep last 30 progress updates (~2.5 minutes at 5 second intervals)
 
-	$: if (currentResearch) {
-		// Check if research changed
-		const currentTechId = `${currentResearch.name}_${currentResearch.level}`;
-		const lastEntry = progressHistory[progressHistory.length - 1];
-		const lastTechId = lastEntry ? `${lastEntry.techName}_${lastEntry.techLevel}` : null;
+	// Track progress history using $effect
+	$effect(() => {
+		if (currentResearch) {
+			// Check if research changed
+			const currentTechId = `${currentResearch.name}_${currentResearch.level}`;
+			const lastEntry = progressHistory[progressHistory.length - 1];
+			const lastTechId = lastEntry ? `${lastEntry.techName}_${lastEntry.techLevel}` : null;
 
-		if (lastTechId !== currentTechId) {
-			// Research changed, reset history
-			progressHistory = [];
-		}
+			if (lastTechId !== currentTechId) {
+				// Research changed, reset history
+				progressHistory = [];
+			}
 
-		// Add current progress to history if it has progress data
-		if (currentResearch.progress !== undefined) {
-			progressHistory = [
-				...progressHistory,
-				{
-					timestamp: Date.now(),
-					progress: currentResearch.progress,
-					techName: currentResearch.name,
-					techLevel: currentResearch.level
-				}
-			].slice(-MAX_HISTORY); // Keep only last MAX_HISTORY entries
+			// Add current progress to history if it has progress data
+			if (currentResearch.progress !== undefined) {
+				progressHistory = [
+					...progressHistory,
+					{
+						timestamp: Date.now(),
+						progress: currentResearch.progress,
+						techName: currentResearch.name,
+						techLevel: currentResearch.level
+					}
+				].slice(-MAX_HISTORY); // Keep only last MAX_HISTORY entries
+			}
 		}
-	}
+	});
 
 	// Calculate estimated time based on progress history
-	$: estimatedTime = (() => {
+	let estimatedTime = $derived.by(() => {
 		if (!currentResearch || currentResearch.progress === undefined || currentResearch.progress >= 1) {
 			return null;
 		}
@@ -111,11 +113,11 @@
 		
 		// Convert seconds to game ticks (60 ticks per second)
 		return secondsRemaining * 60;
-	})();
+	});
 
-	$: progressPercent = currentResearch?.progress ? (currentResearch.progress * 100).toFixed(1) : '0';
-	$: displayName = currentResearch ? prettifyResearchName(currentResearch.name) : 'No Active Research';
-	$: level = currentResearch?.level || 1;
+	let progressPercent = $derived(currentResearch?.progress ? (currentResearch.progress * 100).toFixed(1) : '0');
+	let displayName = $derived(currentResearch ? prettifyResearchName(currentResearch.name) : 'No Active Research');
+	let level = $derived(currentResearch?.level || 1);
 </script>
 
 <div class="research-progress">

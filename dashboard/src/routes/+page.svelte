@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	import { statsStore, lastUpdateStore, errorStore, startStatsPolling, refreshStats } from '../lib/stores/statsStore';
+	import { statsStore, lastUpdateStore, errorStore, startStatsPolling, refreshStats } from '../lib/stores/statsStore.svelte';
 	import { formatTime, formatTimestamp } from '../lib/utils/formatters';
 	
 	import ScienceProductionChart from '../lib/components/ScienceProductionChart.svelte';
@@ -11,22 +10,26 @@
 	
 	import '../app.css';
 
-	let stopPolling: (() => void) | null = null;
+	let stopPolling = $state<(() => void) | null>(null);
+	let stats = $derived(statsStore.value);
+	let lastUpdate = $derived(lastUpdateStore.value);
+	let error = $derived(errorStore.value);
 
-	onMount(() => {
-		// Start polling for stats every 5 seconds
+	let gameTime = $derived(stats ? formatTime(stats.game_time) : '--');
+	let lastUpdateFormatted = $derived(formatTimestamp(lastUpdate));
+	let hasError = $derived(error !== null);
+
+	// Start polling on mount
+	$effect(() => {
 		stopPolling = startStatsPolling(5000);
+		
+		// Cleanup on unmount
+		return () => {
+			if (stopPolling) {
+				stopPolling();
+			}
+		};
 	});
-
-	onDestroy(() => {
-		if (stopPolling) {
-			stopPolling();
-		}
-	});
-
-	$: gameTime = $statsStore ? formatTime($statsStore.game_time) : '--';
-	$: lastUpdate = formatTimestamp($lastUpdateStore);
-	$: hasError = $errorStore !== null;
 </script>
 
 <svelte:head>
@@ -49,9 +52,9 @@
 				</div>
 				<div class="stat-item">
 					<span class="stat-label">Last Update:</span>
-					<span class="stat-value">{lastUpdate}</span>
+					<span class="stat-value">{lastUpdateFormatted}</span>
 				</div>
-				<button class="refresh-btn" on:click={refreshStats}>
+				<button class="refresh-btn" onclick={refreshStats}>
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
 						<path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
 						<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -63,7 +66,7 @@
 		
 		{#if hasError}
 			<div class="error-banner">
-				⚠️ Error: {$errorStore}
+				⚠️ Error: {error}
 			</div>
 		{/if}
 	</header>

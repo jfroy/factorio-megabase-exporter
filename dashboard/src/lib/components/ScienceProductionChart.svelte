@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { Chart, registerables } from 'chart.js';
-	import { historyStore } from '../stores/statsStore';
+	import { historyStore } from '../stores/statsStore.svelte';
 	import { getScienceColor } from '../utils/chartConfig';
 	import { defaultChartOptions } from '../utils/chartConfig';
 	import type { SciencePackType } from '../types/stats';
 
 	Chart.register(...registerables);
 
-	let canvas: HTMLCanvasElement;
-	let chart: Chart | null = null;
+	let canvas = $state<HTMLCanvasElement | null>(null);
+	let chart = $state<Chart | null>(null);
+	let history = $derived(historyStore.value);
 
 	// Filter out science packs with no production activity
 	function getActiveSciencePacks(history: any[]) {
@@ -31,13 +31,13 @@
 	}
 
 	function updateChart() {
-		if (!chart || !$historyStore.length) return;
+		if (!chart || !history.length) return;
 
-		const activePacks = getActiveSciencePacks($historyStore);
+		const activePacks = getActiveSciencePacks(history);
 		
 		// Create time labels (relative time in minutes)
-		const labels = $historyStore.map((entry, index) => {
-			const minutesAgo = ($historyStore.length - index - 1) * 5 / 60; // 5 seconds per entry
+		const labels = history.map((entry, index) => {
+			const minutesAgo = (history.length - index - 1) * 5 / 60; // 5 seconds per entry
 			return minutesAgo > 0 ? `-${minutesAgo.toFixed(1)}m` : 'now';
 		});
 
@@ -45,7 +45,7 @@
 		const datasets: any[] = [];
 		
 		activePacks.forEach((packName) => {
-			const data = $historyStore.map((entry) => {
+			const data = history.map((entry) => {
 				let total = 0;
 				for (const key in entry.data.science_packs.rate_1m) {
 					if (key.startsWith(packName)) {
@@ -77,7 +77,10 @@
 		chart.update('none'); // Update without animation
 	}
 
-	onMount(() => {
+	// Initialize chart when canvas is ready
+	$effect(() => {
+		if (!canvas) return;
+
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
@@ -105,10 +108,10 @@
 						...defaultChartOptions.plugins?.tooltip,
 						callbacks: {
 							...defaultChartOptions.plugins?.tooltip?.callbacks,
-							title: function(context) {
+							title: function(context: any) {
 								return 'Time: ' + context[0].label;
 							},
-							label: function(context) {
+							label: function(context: any) {
 								let label = context.dataset.label || '';
 								if (label) {
 									label += ': ';
@@ -125,12 +128,12 @@
 								}
 								return label;
 							},
-							afterBody: function(context) {
+							afterBody: function(context: any) {
 								if (context.length === 0) return [];
 								
 								// Calculate total production for this time point
 								let total = 0;
-								context.forEach(item => {
+								context.forEach((item: any) => {
 									total += item.parsed.y || 0;
 								});
 								
@@ -146,26 +149,30 @@
 					}
 				}
 			} as any
-		});
+		}) as any;
 
 		updateChart();
+
+		// Cleanup on unmount
+		return () => {
+			if (chart) {
+				chart.destroy();
+				chart = null;
+			}
+		};
 	});
 
-	onDestroy(() => {
-		if (chart) {
-			chart.destroy();
+	// Watch for history changes and update chart
+	$effect(() => {
+		if (chart && history) {
+			updateChart();
 		}
 	});
-
-	// Watch for store changes
-	$: if (chart && $historyStore) {
-		updateChart();
-	}
 </script>
 
 <div class="chart-container">
 	<canvas bind:this={canvas}></canvas>
-	{#if !$historyStore.length}
+	{#if !history.length}
 		<div class="loading">Waiting for data...</div>
 	{/if}
 </div>

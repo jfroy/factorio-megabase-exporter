@@ -1,15 +1,17 @@
 <script lang="ts">
-	import { parsedSciencePacksStore } from '../stores/statsStore';
+	import { parsedSciencePacksStore } from '../stores/statsStore.svelte';
 	import { formatRate } from '../utils/formatters';
 	import { getScienceColor } from '../utils/chartConfig';
 	import { getQualityColor } from '../utils/formatters';
 	import type { ParsedSciencePack } from '../types/stats';
 
+	let packs = $derived(parsedSciencePacksStore.value);
+
 	// Group science packs by type and sum rates across qualities
-	$: groupedPacks = (() => {
+	let groupedPacks = $derived.by(() => {
 		const groups = new Map<string, { production: number; consumption: number; color: string; qualities: Set<string> }>();
 		
-		$parsedSciencePacksStore.forEach((pack) => {
+		packs.forEach((pack) => {
 			if (!groups.has(pack.type)) {
 				groups.set(pack.type, {
 					production: 0,
@@ -33,7 +35,7 @@
 			.filter(([_, data]) => data.production > 0 || data.consumption > 0)
 			.map(([type, data]) => ({ type, ...data }))
 			.sort((a, b) => b.production - a.production);
-	})();
+	});
 
 	function getMaxRate(packs: any[]): number {
 		return Math.max(...packs.map(p => Math.max(p.production, p.consumption)), 1);
@@ -60,7 +62,7 @@
 							{#if quality !== 'normal'}
 								<span 
 									class="quality-badge" 
-									style="background-color: {getQualityColor(quality)};"
+									style="background-color: {getQualityColor(quality as import('../types/stats').QualityLevel)};"
 									title={quality}
 								></span>
 							{/if}
