@@ -1,6 +1,6 @@
 {
   "name": "factorio-megabase-dashboard",
-  "version": "1.0.0",
+  "version": "0.1",
   "description": "Real-time web dashboard for Factorio Megabase Exporter mod statistics",
   "author": "",
   "license": "Apache 2.0",
@@ -25,7 +25,7 @@
     "@sveltejs/kit": "^2.50.1",
     "@types/bun": "latest",
     "@types/node": "^25.0.10",
-    "svelte": "^5.48.2",
+    "svelte": "^5.48.3",
     "svelte-check": "^4.3.5",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
