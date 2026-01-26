@@ -38,7 +38,6 @@
 		<div class="header-content">
 			<div class="title-section">
 				<h1>Factorio Megabase Dashboard</h1>
-				<div class="subtitle">Real-time Factory Statistics</div>
 			</div>
 			
 			<div class="stats-section">
@@ -137,13 +136,6 @@
 		font-size: 1.8rem;
 		margin: 0;
 		text-shadow: 0 0 10px rgba(255, 119, 0, 0.5);
-	}
-
-	.subtitle {
-		color: #a0a0a0;
-		font-family: monospace;
-		font-size: 0.9rem;
-		margin-top: 0.25rem;
 	}
 
 	.stats-section {
