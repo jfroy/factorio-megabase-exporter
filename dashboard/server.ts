@@ -3,7 +3,14 @@ import { readFile, stat } from 'fs/promises';
 import { join } from 'path';
 
 const PORT = 3000;
-const STATS_PATH = join(import.meta.dir, '..', '..', '..', 'script-output', 'megabase-exporter', 'stats.json');
+
+// Environment configuration
+const FACTORIO_PATH = process.env.FACTORIO_PATH || join(import.meta.dir, '..', '..', '..');
+const STATS_PATH = join(FACTORIO_PATH, 'script-output', 'megabase-exporter', 'stats.json');
+const TECH_ASSET_PATHS = [
+	join(FACTORIO_PATH, 'data', 'base', 'graphics', 'technology'),
+	join(FACTORIO_PATH, 'data', 'space-age', 'graphics', 'technology')
+];
 const BUILD_DIR = join(import.meta.dir, 'build');
 
 let cachedStats: string | null = null;
@@ -51,6 +58,26 @@ const server = Bun.serve({
 			});
 		}
 
+		// API endpoint for technology assets
+		if (url.pathname.startsWith('/api/assets/technology/')) {
+			const assetName = url.pathname.replace('/api/assets/technology/', '');
+			
+			// Try each tech asset path
+			for (const techPath of TECH_ASSET_PATHS) {
+				const assetFile = Bun.file(join(techPath, assetName));
+				if (await assetFile.exists()) {
+					return new Response(assetFile, {
+						headers: {
+							'Access-Control-Allow-Origin': '*',
+							'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+						}
+					});
+				}
+			}
+			
+			return new Response('Asset not found', { status: 404 });
+		}
+
 		// Serve static files from build directory
 		try {
 			const filePath = url.pathname === '/' ? '/index.html' : url.pathname;
@@ -82,7 +109,9 @@ console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 Server running at: http://localhost:${server.port}
 📊 Stats endpoint: http://localhost:${server.port}/api/stats
+🎨 Assets endpoint: http://localhost:${server.port}/api/assets/technology/
 📁 Serving from: ${BUILD_DIR}
 📝 Watching: ${STATS_PATH}
+🎮 Factorio path: ${FACTORIO_PATH}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `);

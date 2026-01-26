@@ -65,6 +65,7 @@ The dashboard will be available at: **http://localhost:3000**
 The server provides:
 - Static files: Serves the built SvelteKit app
 - API endpoint: `/api/stats` returns the latest stats.json data
+- API endpoint: `/api/assets/technology/{name}.png` serves technology icons from Factorio
 - File watching: Automatically reloads when stats.json changes
 
 ### Development Mode
@@ -85,6 +86,30 @@ The dev server runs on port 5173 by default and proxies API requests to the back
 
 ## Configuration
 
+### Environment Variables
+
+#### FACTORIO_PATH
+
+Set the path to your Factorio installation directory. This is used to:
+- Locate the stats.json file at `$FACTORIO_PATH/script-output/megabase-exporter/stats.json`
+- Serve technology icons from `$FACTORIO_PATH/data/base/graphics/technology/` and `$FACTORIO_PATH/data/space-age/graphics/technology/`
+
+**Setting FACTORIO_PATH:**
+
+```bash
+# Option 1: Set in your shell before running
+export FACTORIO_PATH="/path/to/factorio"
+bun run start
+
+# Option 2: Set inline when running
+FACTORIO_PATH="/path/to/factorio" bun run start
+
+# Option 3: Use the start-dashboard.sh script (auto-detects from mod location)
+../start-dashboard.sh
+```
+
+If not set, the server will default to `../../../` (assuming the mod is installed in the Factorio mods directory).
+
 ### Update Frequency
 
 The dashboard polls the API every 5 seconds by default. To change this, edit `src/routes/+page.svelte`:
@@ -104,11 +129,27 @@ const PORT = 3000; // Change to your desired port
 
 ### Stats File Location
 
-By default, the server looks for `stats.json` in the parent directory (`../stats.json`). To change this, edit `server.ts`:
+The stats file location is now automatically derived from the `FACTORIO_PATH` environment variable:
 
 ```typescript
-const STATS_PATH = join(import.meta.dir, '..', 'stats.json');
+const STATS_PATH = join(FACTORIO_PATH, 'script-output', 'megabase-exporter', 'stats.json');
 ```
+
+If you need to customize this further, edit `server.ts`.
+
+### Technology Assets
+
+Technology icons are automatically served from the Factorio installation. The server searches these directories in order:
+1. `$FACTORIO_PATH/data/base/graphics/technology/`
+2. `$FACTORIO_PATH/data/space-age/graphics/technology/`
+
+Assets are accessible via: `http://localhost:3000/api/assets/technology/{technology-name}.png`
+
+For example:
+- `http://localhost:3000/api/assets/technology/automation-2.png`
+- `http://localhost:3000/api/assets/technology/steel-processing.png`
+
+The dashboard automatically uses these assets to display technology icons in the Research Progress and Research Queue components.
 
 ## Project Structure
 
@@ -182,6 +223,23 @@ Returns the current statistics from stats.json.
 - `Content-Type: application/json`
 - `Cache-Control: no-cache`
 - `Access-Control-Allow-Origin: *` (CORS enabled)
+
+### GET /api/assets/technology/{name}.png
+
+Serves technology icons from the Factorio installation.
+
+**Parameters**:
+- `name`: The technology name (e.g., `automation-2`, `steel-processing`)
+
+**Response**: PNG image file
+
+**Headers**:
+- `Cache-Control: public, max-age=86400` (24 hour cache)
+- `Access-Control-Allow-Origin: *` (CORS enabled)
+
+**Status Codes**:
+- `200`: Asset found and returned
+- `404`: Asset not found in any search path
 
 ## Troubleshooting
 

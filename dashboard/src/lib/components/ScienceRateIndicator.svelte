@@ -3,6 +3,7 @@
 	import { formatRate } from '../utils/formatters';
 	import { getScienceColor } from '../utils/chartConfig';
 	import { getQualityColor } from '../utils/formatters';
+	import { getSciencePackAssetUrl } from '../utils/assets';
 	import type { ParsedSciencePack } from '../types/stats';
 
 	// Group science packs by type and sum rates across qualities
@@ -50,11 +51,13 @@
 		{#each groupedPacks as pack}
 			<div class="rate-row">
 				<div class="pack-info">
-					<img 
-						src="/icons/{pack.type}.svg" 
-						alt={pack.type}
-						class="pack-icon"
-					/>
+					<div class="pack-icon-wrapper">
+						<img 
+							src={getSciencePackAssetUrl(pack.type)} 
+							alt={pack.type}
+							class="pack-icon"
+						/>
+					</div>
 					<span class="pack-name">
 						{pack.type.split('-').slice(0, -2).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
 					</span>
@@ -145,10 +148,22 @@
 		gap: 0.5rem;
 	}
 
-	.pack-icon {
+	.pack-icon-wrapper {
 		width: 32px;
 		height: 32px;
+		overflow: hidden;
 		flex-shrink: 0;
+		position: relative;
+	}
+
+	.pack-icon {
+		display: block;
+		width: 32px;
+		height: 32px;
+		object-fit: cover;
+		object-position: top left;
+		image-rendering: -webkit-optimize-contrast;
+		image-rendering: crisp-edges;
 	}
 
 	.pack-name {

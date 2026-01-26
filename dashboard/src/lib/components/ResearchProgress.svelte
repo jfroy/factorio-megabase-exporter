@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { currentResearchStore, statsStore } from '../stores/statsStore';
 	import { formatTime, formatNumberWithCommas, prettifyResearchName } from '../utils/formatters';
+	import { getTechnologyAssetUrl } from '../utils/assets';
 	import { onMount } from 'svelte';
 	import MiniESPMChart from './MiniESPMChart.svelte';
 
@@ -128,6 +129,7 @@
 	let progressPercent = $derived(currentResearch?.progress ? (currentResearch.progress * 100).toFixed(1) : '0');
 	let displayName = $derived(currentResearch ? prettifyResearchName(currentResearch.name) : 'No Active Research');
 	let level = $derived(currentResearch?.level || 1);
+	let techIconUrl = $derived(currentResearch ? getTechnologyAssetUrl(currentResearch.name) : '');
 </script>
 
 <div class="research-progress">
@@ -138,10 +140,21 @@
 		
 		<div class="content">
 			<div class="tech-info">
-				<div class="tech-name">{displayName}</div>
-				{#if level > 1}
-					<div class="tech-level">Level {level}</div>
+				{#if techIconUrl}
+					<div class="tech-icon-wrapper">
+						<img 
+							src={techIconUrl} 
+							alt={displayName} 
+							class="tech-icon"
+						/>
+					</div>
 				{/if}
+				<div class="tech-details">
+					<div class="tech-name">{displayName}</div>
+					{#if level > 1}
+						<div class="tech-level">Level {level}</div>
+					{/if}
+				</div>
 			</div>
 			
 			<div class="progress-bar">
@@ -218,9 +231,35 @@
 
 	.tech-info {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		align-items: center;
+		gap: 1rem;
+	}
+
+	.tech-icon-wrapper {
+		width: 64px;
+		height: 64px;
+		overflow: hidden;
+		flex-shrink: 0;
+		position: relative;
+		filter: drop-shadow(0 0 4px rgba(255, 119, 0, 0.3));
+	}
+
+	.tech-icon {
+		display: block;
+		width: 64px;
+		height: 64px;
+		object-fit: cover;
+		object-position: top left;
+		image-rendering: -webkit-optimize-contrast;
+		image-rendering: crisp-edges;
+	}
+
+	.tech-details {
+		display: flex;
+		flex-direction: column;
 		gap: 0.25rem;
+		flex: 1;
 	}
 
 	.tech-name {
@@ -228,7 +267,6 @@
 		font-family: monospace;
 		font-size: 1.1rem;
 		font-weight: bold;
-		text-align: center;
 	}
 
 	.tech-level {

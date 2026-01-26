@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { researchQueueStore } from '../stores/statsStore';
 	import { prettifyResearchName } from '../utils/formatters';
+	import { getTechnologyAssetUrl } from '../utils/assets';
 </script>
 
 <div class="research-queue">
@@ -10,6 +11,13 @@
 		{#each $researchQueueStore as research (research.position)}
 			<div class="queue-item">
 				<div class="position">{research.position}</div>
+				<div class="tech-icon-wrapper">
+					<img 
+						src={getTechnologyAssetUrl(research.name)} 
+						alt={research.name} 
+						class="tech-icon"
+					/>
+				</div>
 				<div class="info">
 					<div class="name">{prettifyResearchName(research.name)}</div>
 					{#if research.level > 1}
@@ -84,6 +92,25 @@
 		font-size: 0.9rem;
 		font-weight: bold;
 		flex-shrink: 0;
+	}
+
+	.tech-icon-wrapper {
+		width: 32px;
+		height: 32px;
+		overflow: hidden;
+		flex-shrink: 0;
+		position: relative;
+		filter: drop-shadow(0 0 2px rgba(255, 119, 0, 0.2));
+	}
+
+	.tech-icon {
+		display: block;
+		width: 32px;
+		height: 32px;
+		object-fit: cover;
+		object-position: top left;
+		image-rendering: -webkit-optimize-contrast;
+		image-rendering: crisp-edges;
 	}
 
 	.info {
