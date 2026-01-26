@@ -32,14 +32,9 @@ local QUALITIES = {
   "legendary"
 }
 
--- Initialize global data on mod load
-local function on_init()
+-- Initialize global data
+local function init_global()
   global = global or {}
-  global.last_update_tick = 0
-end
-
--- Reset data on configuration change
-local function on_configuration_changed()
   global.last_update_tick = 0
 end
 
@@ -147,6 +142,6 @@ local function on_tick(event)
 end
 
 -- Register event handlers
-script.on_init(on_init)
-script.on_configuration_changed(on_configuration_changed)
+script.on_init(init_global)
+script.on_load(init_global)
 script.on_event(defines.events.on_tick, on_tick)
