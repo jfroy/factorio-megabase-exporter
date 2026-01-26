@@ -122,9 +122,11 @@ export const defaultChartOptions: ChartOptions<'line'> = {
 	},
 	scales: {
 		x: {
+			border: {
+				display: false
+			},
 			grid: {
-				color: 'rgba(255, 255, 255, 0.1)',
-				drawBorder: false
+				color: 'rgba(255, 255, 255, 0.1)'
 			},
 			ticks: {
 				color: '#a0a0a0',
@@ -135,9 +137,11 @@ export const defaultChartOptions: ChartOptions<'line'> = {
 			}
 		},
 		y: {
+			border: {
+				display: false
+			},
 			grid: {
-				color: 'rgba(255, 255, 255, 0.1)',
-				drawBorder: false
+				color: 'rgba(255, 255, 255, 0.1)'
 			},
 			ticks: {
 				color: '#a0a0a0',
@@ -164,12 +168,107 @@ export const defaultChartOptions: ChartOptions<'line'> = {
  * Options for bar charts
  */
 export const barChartOptions: ChartOptions<'bar'> = {
-	...defaultChartOptions,
+	responsive: true,
+	maintainAspectRatio: false,
+	animation: false,
 	indexAxis: 'y' as const,
+	interaction: {
+		mode: 'index',
+		intersect: false,
+	},
 	plugins: {
-		...defaultChartOptions.plugins,
 		legend: {
 			display: false
+		},
+		tooltip: {
+			enabled: true,
+			mode: 'index',
+			intersect: false,
+			backgroundColor: 'rgba(0, 0, 0, 0.95)',
+			titleColor: '#ff7700',
+			bodyColor: '#e0e0e0',
+			borderColor: '#ff7700',
+			borderWidth: 2,
+			padding: 16,
+			displayColors: true,
+			boxWidth: 12,
+			boxHeight: 12,
+			boxPadding: 6,
+			usePointStyle: false,
+			titleFont: {
+				family: 'monospace',
+				size: 13,
+				weight: 'bold'
+			},
+			bodyFont: {
+				family: 'monospace',
+				size: 12
+			},
+			bodySpacing: 6,
+			callbacks: {
+				title: function(context) {
+					return 'Time: ' + context[0].label;
+				},
+				label: function(context) {
+					let label = context.dataset.label || '';
+					if (label) {
+						label += ': ';
+					}
+					if (context.parsed.x !== null) {
+						const value = context.parsed.x;
+						if (value >= 1000000) {
+							label += (value / 1000000).toFixed(2) + 'M/m';
+						} else if (value >= 1000) {
+							label += (value / 1000).toFixed(2) + 'k/m';
+						} else {
+							label += value.toFixed(0) + '/m';
+						}
+					}
+					return label;
+				}
+			}
+		}
+	},
+	scales: {
+		x: {
+			border: {
+				display: false
+			},
+			grid: {
+				color: 'rgba(255, 255, 255, 0.1)'
+			},
+			ticks: {
+				color: '#a0a0a0',
+				font: {
+					family: 'monospace',
+					size: 10
+				},
+				callback: function(value) {
+					const numValue = Number(value);
+					if (numValue >= 1000000) {
+						return (numValue / 1000000).toFixed(1) + 'M';
+					} else if (numValue >= 1000) {
+						return (numValue / 1000).toFixed(1) + 'k';
+					}
+					return numValue.toString();
+				}
+			},
+			beginAtZero: true
+		},
+		y: {
+			border: {
+				display: false
+			},
+			grid: {
+				color: 'rgba(255, 255, 255, 0.1)'
+			},
+			ticks: {
+				color: '#a0a0a0',
+				font: {
+					family: 'monospace',
+					size: 10
+				}
+			}
 		}
 	}
 };
