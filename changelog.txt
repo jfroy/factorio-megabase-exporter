@@ -1,9 +1,0 @@
----------------------------------------------------------------------------------------------------
-Version: 1.0.0
-Date: 2026-01-24
-  Features:
-    - Initial release
-    - Export science pack production and consumption statistics
-    - Export current research progress and research queue
-    - JSON output every 10 seconds
-    - Low overhead design for minimal performance impact
