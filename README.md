@@ -13,42 +13,49 @@ A lightweight Factorio mod that exports key statistics about your factory to a J
 - **JSON export**: Outputs to `script-output/megabase-exporter/stats.json`
 - **Web Dashboard**: Real-time visualization dashboard (see [dashboard/](dashboard/))
 
+## Installation
+
+1. Clone the repo in your Factorio mods directory:
+
+   - **Windows**: `%appdata%\Factorio\mods\`
+   - **Linux**: `~/.factorio/mods/`
+   - **macOS**: `~/Library/Application Support/factorio/mods/`
+
+   If you have downloaded Factorio from the game's website, the mods directory will be inside the game's directory.
+
+2. Enable the mod in the game.
+
 ## Dashboard
 
 This mod now includes a modern web dashboard for real-time visualization of your factory statistics!
 
-![Dashboard Preview](screenshots/Screenshot_20260125_094808.png)
+![Dashboard Preview](dashboard.avif)
 
 ### Quick Start
 
 1. Ensure the mod is running in Factorio
 2. Navigate to the dashboard directory:
+
    ```bash
    cd dashboard
    ```
+
 3. Install dependencies and build:
+
    ```bash
    bun install
    bun run build
    ```
+
 4. Start the server:
+
    ```bash
    bun run start
    ```
-5. Open http://localhost:3000 in your browser
+
+5. Open <http://localhost:3000> in your browser
 
 See [dashboard/README.md](dashboard/README.md) for detailed documentation.
-
-## Installation
-
-1. Copy this mod folder to your Factorio mods directory:
-   - **Windows**: `%appdata%\Factorio\mods\`
-   - **Linux**: `~/.factorio/mods/`
-   - **macOS**: `~/Library/Application Support/factorio/mods/`
-
-2. Launch Factorio and enable the mod from the Mods menu
-
-3. Load or start a game
 
 ## Output Format
 
@@ -58,21 +65,151 @@ The mod writes statistics to `script-output/megabase-exporter/stats.json` every 
 
 ```json
 {
-  "timestamp": 36000,
-  "game_time": 36000,
+  "timestamp": 303533400,
+  "game_time": 303533400,
   "science_packs": {
     "total": {
       "automation-science-pack_normal": {
-        "produced": 1500,
-        "consumed": 1200,
-        "stored": 300
-      }
+        "produced": 64524062,
+        "consumed": 64525753,
+        "stored": 0
+      },
+      "automation-science-pack_uncommon": {
+        "produced": 1071919604,
+        "consumed": 1072468798,
+        "stored": 0
+      },
+      "logistic-science-pack_uncommon": {
+        "produced": 1071894869,
+        "consumed": 1072453874,
+        "stored": 0
+      },
+      "military-science-pack_uncommon": {
+        "produced": 318464516,
+        "consumed": 319144236,
+        "stored": 0
+      },
+      "chemical-science-pack_uncommon": {
+        "produced": 1072036646,
+        "consumed": 1072689888,
+        "stored": 0
+      },
+      "production-science-pack_uncommon": {
+        "produced": 836664214,
+        "consumed": 837261852,
+        "stored": 0
+      },
+      "utility-science-pack_uncommon": {
+        "produced": 516113943,
+        "consumed": 516725292,
+        "stored": 0
+      },
+      "space-science-pack_legendary": {
+        "produced": 172088124,
+        "consumed": 173178650,
+        "stored": 0
+      },
+      "metallurgic-science-pack_uncommon": {
+        "produced": 124736116,
+        "consumed": 128826741,
+        "stored": 0
+      },
+      "electromagnetic-science-pack_uncommon": {
+        "produced": 322065010,
+        "consumed": 324054486,
+        "stored": 0
+      },
+      "agricultural-science-pack_normal": {
+        "produced": 585392902,
+        "consumed": 1144922038,
+        "stored": 0
+      },
+      "cryogenic-science-pack_uncommon": {
+        "produced": 135408885,
+        "consumed": 140261050,
+        "stored": 0
+      },
+      "promethium-science-pack_normal": {
+        "produced": 162625054,
+        "consumed": 168704270,
+        "stored": 0
+      },
+      "science_normal": {
+        "produced": 0,
+        "consumed": 28930544688,
+        "stored": 0
+      },
     },
     "rate_1m": {
       "automation-science-pack_normal": {
-        "produced": 120,
-        "consumed": 100,
-        "stored": 20
+        "produced": 0,
+        "consumed": 0,
+        "stored": 0
+      },
+      "automation-science-pack_uncommon": {
+        "produced": 51606.833333333328482694923877716064453125,
+        "consumed": 55542.25,
+        "stored": 0
+      },
+      "logistic-science-pack_uncommon": {
+        "produced": 52440.666666666671517305076122283935546875,
+        "consumed": 55542.25,
+        "stored": 0
+      },
+      "military-science-pack_uncommon": {
+        "produced": 53334.3333333333357586525380611419677734375,
+        "consumed": 55542.1666666666642413474619388580322265625,
+        "stored": 0
+      },
+      "chemical-science-pack_uncommon": {
+        "produced": 53758.6666666666642413474619388580322265625,
+        "consumed": 55542.25,
+        "stored": 0
+      },
+      "production-science-pack_uncommon": {
+        "produced": 52664,
+        "consumed": 55543.16666666665696538984775543212890625,
+        "stored": 0
+      },
+      "utility-science-pack_uncommon": {
+        "produced": 53266.5000000000072759576141834259033203125,
+        "consumed": 55542.25,
+        "stored": 0
+      },
+      "space-science-pack_legendary": {
+        "produced": 18330,
+        "consumed": 18447.916666666671517305076122283935546875,
+        "stored": 0
+      },
+      "metallurgic-science-pack_uncommon": {
+        "produced": 87759.5,
+        "consumed": 55542.1666666666642413474619388580322265625,
+        "stored": 0
+      },
+      "electromagnetic-science-pack_uncommon": {
+        "produced": 29434.25,
+        "consumed": 55542.1666666666642413474619388580322265625,
+        "stored": 0
+      },
+      "agricultural-science-pack_normal": {
+        "produced": 115.0000000000000142108547152020037174224853515625,
+        "consumed": 127730.416666666642413474619388580322265625,
+        "stored": 0
+      },
+      "cryogenic-science-pack_uncommon": {
+        "produced": 44685.333333333328482694923877716064453125,
+        "consumed": 55542.1666666666642413474619388580322265625,
+        "stored": 0
+      },
+      "promethium-science-pack_normal": {
+        "produced": 64886.6666666666642413474619388580322265625,
+        "consumed": 111166.916666666671517305076122283935546875,
+        "stored": 0
+      },
+      "science_normal": {
+        "produced": 2023300.0833333334885537624359130859375,
+        "consumed": 0,
+        "stored": 0
       }
     }
   },
@@ -80,10 +217,19 @@ The mod writes statistics to `script-output/megabase-exporter/stats.json` every 
     "queue": [
       {
         "position": 1,
-        "name": "advanced-electronics",
-        "localised_name": ["technology-name.advanced-electronics"],
-        "level": 1,
-        "progress": 0.45
+        "name": "research-productivity",
+        "level": 72,
+        "progress": 0.511651019539009244141425369889475405216217041015625
+      },
+      {
+        "position": 2,
+        "name": "mining-productivity-3",
+        "level": 4151
+      },
+      {
+        "position": 3,
+        "name": "worker-robots-speed-7",
+        "level": 28
       }
     ]
   }
@@ -92,89 +238,11 @@ The mod writes statistics to `script-output/megabase-exporter/stats.json` every 
 
 **Note**: The example above is abbreviated. The actual output includes all 12 science packs at all 5 quality levels for both `total` and `rate_1m` sections, plus the "science" eSPM special entity.
 
-## Data Fields
-
-### Root Level
-
-- `timestamp`: Current game tick when data was collected
-- `game_time`: Total ticks played in this save
-- `science_packs`: Object containing statistics for all science types
-  - `total`: Lifetime totals for production, consumption, and storage
-  - `rate_1m`: Production rates over the last 1 minute
-- `research`: Object containing research queue information
-
-### Science Packs
-
-The mod tracks 13 science entities:
-
-- **Base game**: automation, logistic, military, chemical, production, utility, space
-- **Space Age**: metallurgic, electromagnetic, agricultural, cryogenic, promethium
-- **Special entity**: "science" for the eSPM
-
-Each science pack is further broken down by quality level:
-
-- normal
-- uncommon
-- rare
-- epic
-- legendary
-
-#### Total Statistics (`science_packs.total`)
-
-For each science entity and quality combination:
-
-- `produced`: Total units produced since game start (summed across all surfaces)
-- `consumed`: Total units consumed in research since game start (summed across all surfaces)
-- `stored`: Current number of units in storage (summed across all surfaces)
-
-#### Rate Statistics (`science_packs.rate_1m`)
-
-For each science type and quality combination:
-
-- `produced`: Production rate over the last 1 minute (items per minute)
-- `consumed`: Consumption rate over the last 1 minute (items per minute)
-- `stored`: Storage flow rate over the last 1 minute (items per minute)
-
-### Research
-
-- `queue`: Array of all queued research technologies (including the current one as first entry)
-  - `position`: Position in queue (1 is current research)
-  - `name`: Internal research name
-  - `localised_name`: Localized display name array
-  - `level`: Research level for infinite technologies (defaults to 1 for non-infinite)
-  - `progress`: Research progress (0.0 to 1.0, only present for position 1)
-
-## Configuration
-
-To change the update interval, edit `control.lua` and modify the `UPDATE_INTERVAL` constant:
-
-```lua
-local UPDATE_INTERVAL = 600  -- 10 seconds at 60 ticks/second
-```
-
-For example:
-- 5 seconds: `300`
-- 30 seconds: `1800`
-- 1 minute: `3600`
-
-## Use Cases
-
-- Real-time monitoring dashboards (via included web dashboard)
-- External analytics and reporting
-- Factory optimization tools
-- Stream overlays for Factorio broadcasts
-- Data collection for analysis and planning
-
 ## Compatibility
 
 - Factorio version: 2.0+
 - Supports both base game and Space Age expansion
-- Space Age science packs are automatically included when the expansion is active
-- No known mod conflicts
-- Works in single-player and multiplayer
 
-## References
+## AI disclosure
 
-- Inspired by [graftorio2](https://github.com/seiggy/graftorio2)
-- [Factorio Lua API Documentation](https://lua-api.factorio.com/latest/)
-- [Factorio Science Pack Wiki](https://wiki.factorio.com/Science_pack)
+Generated by Claude models in Cursor.
