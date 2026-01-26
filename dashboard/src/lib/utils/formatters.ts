@@ -129,12 +129,15 @@ export function getSciencePackShortName(name: string): string {
 
 /**
  * Prettify research/technology name
- * Splits by '-' and capitalizes the first letter of each word
+ * Strips number suffixes (e.g. "-3") and capitalizes the first letter of each word
  */
 export function prettifyResearchName(name: string): string {
 	if (!name) return 'Unknown';
 	
-	return name
+	// Strip number suffix (e.g., "-3" from "mining-productivity-3")
+	const nameWithoutSuffix = name.replace(/-\d+$/, '');
+	
+	return nameWithoutSuffix
 		.split('-')
 		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(' ');
