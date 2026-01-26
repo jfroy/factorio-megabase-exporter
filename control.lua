@@ -48,13 +48,13 @@ local function get_science_stats(force)
   -- Initialize stats for all science packs and quality combinations
   for _, science_name in ipairs(SCIENCE_PACKS) do
     for _, quality in ipairs(QUALITIES) do
-      local key = {name = science_name, quality = quality}
-      stats.total[key] = {
+      local key_str = science_name .. "_" .. quality
+      stats.total[key_str] = {
         produced = 0,
         consumed = 0,
         stored = 0,
       }
-      stats.rate_1m[key] = {
+      stats.rate_1m[key_str] = {
         produced = 0,
         consumed = 0,
         stored = 0,
@@ -68,15 +68,16 @@ local function get_science_stats(force)
 
     for _, science_name in ipairs(SCIENCE_PACKS) do
       for _, quality in ipairs(QUALITIES) do
-        local key = {name = science_name, quality = quality}
+        local key_str = science_name .. "_" .. quality
+        local stats_id = {name = science_name, quality = quality}
 
-        stats.total[key].produced = stats.total[key].produced + production_stats.get_output_count(key)
-        stats.total[key].consumed = stats.total[key].consumed + production_stats.get_input_count(key)
-        stats.total[key].stored = stats.total[key].stored + production_stats.get_storage_count(key)
+        stats.total[key_str].produced = stats.total[key_str].produced + production_stats.get_output_count(stats_id)
+        stats.total[key_str].consumed = stats.total[key_str].consumed + production_stats.get_input_count(stats_id)
+        stats.total[key_str].stored = stats.total[key_str].stored + production_stats.get_storage_count(stats_id)
 
-        stats.rate_1m[key].produced = stats.rate_1m[key].produced + production_stats.get_flow_count{name={name = science_name, quality = quality}, category = 'input', precision_index = defines.flow_precision_index.one_minute}
-        stats.rate_1m[key].consumed = stats.rate_1m[key].consumed + production_stats.get_flow_count{name={name = science_name, quality = quality}, category = 'output', precision_index = defines.flow_precision_index.one_minute}
-        stats.rate_1m[key].stored = stats.rate_1m[key].stored + production_stats.get_flow_count{name={name = science_name, quality = quality}, category = 'storage', precision_index = defines.flow_precision_index.one_minute}
+        stats.rate_1m[key_str].produced = stats.rate_1m[key_str].produced + production_stats.get_flow_count{name=stats_id, category = 'input', precision_index = defines.flow_precision_index.one_minute}
+        stats.rate_1m[key_str].consumed = stats.rate_1m[key_str].consumed + production_stats.get_flow_count{name=stats_id, category = 'output', precision_index = defines.flow_precision_index.one_minute}
+        stats.rate_1m[key_str].stored = stats.rate_1m[key_str].stored + production_stats.get_flow_count{name=stats_id, category = 'storage', precision_index = defines.flow_precision_index.one_minute}
       end
     end
   end
