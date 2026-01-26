@@ -247,7 +247,7 @@
 		border-radius: 8px;
 		backdrop-filter: blur(5px);
 		min-height: 250px;
-		max-height: 350px;
+		max-height: 480px;
 	}
 
 	.rates-card {
