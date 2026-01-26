@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { statsStore, lastUpdateStore, errorStore, startStatsPolling, refreshStats } from '../lib/stores/statsStore.svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { statsStore, lastUpdateStore, errorStore, startStatsPolling, refreshStats } from '../lib/stores/statsStore';
 	import { formatTime, formatTimestamp } from '../lib/utils/formatters';
 	
 	import ScienceProductionChart from '../lib/components/ScienceProductionChart.svelte';
@@ -11,24 +12,20 @@
 	import '../app.css';
 
 	let stopPolling = $state<(() => void) | null>(null);
-	let stats = $derived(statsStore.value);
-	let lastUpdate = $derived(lastUpdateStore.value);
-	let error = $derived(errorStore.value);
 
-	let gameTime = $derived(stats ? formatTime(stats.game_time) : '--');
-	let lastUpdateFormatted = $derived(formatTimestamp(lastUpdate));
-	let hasError = $derived(error !== null);
+	let gameTime = $derived($statsStore ? formatTime($statsStore.game_time) : '--');
+	let lastUpdate = $derived(formatTimestamp($lastUpdateStore));
+	let hasError = $derived($errorStore !== null);
 
-	// Start polling on mount
-	$effect(() => {
+	onMount(() => {
+		// Start polling for stats every 5 seconds
 		stopPolling = startStatsPolling(5000);
-		
-		// Cleanup on unmount
-		return () => {
-			if (stopPolling) {
-				stopPolling();
-			}
-		};
+	});
+
+	onDestroy(() => {
+		if (stopPolling) {
+			stopPolling();
+		}
 	});
 </script>
 
@@ -52,7 +49,7 @@
 				</div>
 				<div class="stat-item">
 					<span class="stat-label">Last Update:</span>
-					<span class="stat-value">{lastUpdateFormatted}</span>
+					<span class="stat-value">{lastUpdate}</span>
 				</div>
 				<button class="refresh-btn" onclick={refreshStats}>
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -66,7 +63,7 @@
 		
 		{#if hasError}
 			<div class="error-banner">
-				⚠️ Error: {error}
+				⚠️ Error: {$errorStore}
 			</div>
 		{/if}
 	</header>

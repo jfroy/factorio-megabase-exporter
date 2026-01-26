@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { currentResearchStore, statsStore } from '../stores/statsStore.svelte';
+	import { currentResearchStore, statsStore } from '../stores/statsStore';
 	import { formatTime, formatNumberWithCommas, prettifyResearchName } from '../utils/formatters';
+	import { onMount } from 'svelte';
 
-	let currentResearch = $derived(currentResearchStore.value);
-	let stats = $derived(statsStore.value);
+	let currentResearch = $derived($currentResearchStore);
+	let stats = $derived($statsStore);
 	
 	// Calculate eSPM from science_normal production rate
 	let eSPM = $derived.by(() => {
@@ -26,31 +27,39 @@
 
 	let progressHistory = $state<ProgressEntry[]>([]);
 	const MAX_HISTORY = 30; // Keep last 30 progress updates (~2.5 minutes at 5 second intervals)
+	let lastTrackedTechId = $state<string | null>(null);
 
 	// Track progress history using $effect
 	$effect(() => {
 		if (currentResearch) {
 			// Check if research changed
 			const currentTechId = `${currentResearch.name}_${currentResearch.level}`;
-			const lastEntry = progressHistory[progressHistory.length - 1];
-			const lastTechId = lastEntry ? `${lastEntry.techName}_${lastEntry.techLevel}` : null;
 
-			if (lastTechId !== currentTechId) {
+			if (lastTrackedTechId !== currentTechId) {
 				// Research changed, reset history
 				progressHistory = [];
+				lastTrackedTechId = currentTechId;
 			}
 
 			// Add current progress to history if it has progress data
+			// Only add if this is a new progress value (not already tracked)
 			if (currentResearch.progress !== undefined) {
-				progressHistory = [
-					...progressHistory,
-					{
-						timestamp: Date.now(),
-						progress: currentResearch.progress,
-						techName: currentResearch.name,
-						techLevel: currentResearch.level
-					}
-				].slice(-MAX_HISTORY); // Keep only last MAX_HISTORY entries
+				const lastEntry = progressHistory[progressHistory.length - 1];
+				const shouldAdd = !lastEntry || 
+					lastEntry.progress !== currentResearch.progress ||
+					Date.now() - lastEntry.timestamp > 1000; // At least 1 second apart
+				
+				if (shouldAdd) {
+					progressHistory = [
+						...progressHistory,
+						{
+							timestamp: Date.now(),
+							progress: currentResearch.progress,
+							techName: currentResearch.name,
+							techLevel: currentResearch.level
+						}
+					].slice(-MAX_HISTORY); // Keep only last MAX_HISTORY entries
+				}
 			}
 		}
 	});

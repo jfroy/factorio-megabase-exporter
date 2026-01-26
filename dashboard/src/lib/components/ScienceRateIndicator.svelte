@@ -1,17 +1,15 @@
 <script lang="ts">
-	import { parsedSciencePacksStore } from '../stores/statsStore.svelte';
+	import { parsedSciencePacksStore } from '../stores/statsStore';
 	import { formatRate } from '../utils/formatters';
 	import { getScienceColor } from '../utils/chartConfig';
 	import { getQualityColor } from '../utils/formatters';
 	import type { ParsedSciencePack } from '../types/stats';
 
-	let packs = $derived(parsedSciencePacksStore.value);
-
 	// Group science packs by type and sum rates across qualities
 	let groupedPacks = $derived.by(() => {
 		const groups = new Map<string, { production: number; consumption: number; color: string; qualities: Set<string> }>();
 		
-		packs.forEach((pack) => {
+		$parsedSciencePacksStore.forEach((pack) => {
 			if (!groups.has(pack.type)) {
 				groups.set(pack.type, {
 					production: 0,
