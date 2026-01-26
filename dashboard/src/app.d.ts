@@ -8,6 +8,9 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+	
+	// Git hash injected at build time
+	const __GIT_HASH__: string;
 }
 
 export {};
