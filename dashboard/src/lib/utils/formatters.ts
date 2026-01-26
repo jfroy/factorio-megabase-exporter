@@ -126,3 +126,16 @@ export function getSciencePackShortName(name: string): string {
 		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(' ');
 }
+
+/**
+ * Prettify research/technology name
+ * Splits by '-' and capitalizes the first letter of each word
+ */
+export function prettifyResearchName(name: string): string {
+	if (!name) return 'Unknown';
+	
+	return name
+		.split('-')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
+}

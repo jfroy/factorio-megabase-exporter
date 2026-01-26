@@ -90,7 +90,6 @@ local function get_research_info(force)
     local entry = {
       position = i,
       name = research.name,
-      localised_name = research.localised_name,
       level = research.level or 1
     }
 

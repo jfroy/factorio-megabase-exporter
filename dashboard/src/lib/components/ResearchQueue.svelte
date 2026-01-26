@@ -1,18 +1,6 @@
 <script lang="ts">
 	import { researchQueueStore } from '../stores/statsStore';
-
-	// Get localized name
-	function getLocalizedName(localised: string[]): string {
-		if (!localised || localised.length === 0) return 'Unknown';
-		if (Array.isArray(localised)) {
-			const name = localised[0];
-			if (typeof name === 'string' && name.includes('.')) {
-				return name.split('.')[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-			}
-			return name;
-		}
-		return localised;
-	}
+	import { prettifyResearchName } from '../utils/formatters';
 </script>
 
 <div class="research-queue">
@@ -23,7 +11,7 @@
 			<div class="queue-item">
 				<div class="position">{research.position}</div>
 				<div class="info">
-					<div class="name">{getLocalizedName(research.localised_name)}</div>
+					<div class="name">{prettifyResearchName(research.name)}</div>
 					{#if research.level > 1}
 						<div class="level">Level {research.level}</div>
 					{/if}

@@ -28,7 +28,6 @@ export interface SciencePackStats {
 export interface ResearchItem {
 	position: number;
 	name: string;
-	localised_name: string[];
 	level: number;
 	progress?: number; // Only present for position 1 (current research)
 }

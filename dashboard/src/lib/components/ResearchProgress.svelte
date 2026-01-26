@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { currentResearchStore, statsStore } from '../stores/statsStore';
-	import { formatTime, formatNumberWithCommas } from '../utils/formatters';
+	import { formatTime, formatNumberWithCommas, prettifyResearchName } from '../utils/formatters';
 	import { onMount } from 'svelte';
 
 	$: currentResearch = $currentResearchStore;
@@ -113,22 +113,8 @@
 		return secondsRemaining * 60;
 	})();
 
-	// Get localized name
-	function getLocalizedName(localised: string[]): string {
-		if (!localised || localised.length === 0) return 'Unknown';
-		// The format is usually ["technology-name.xxx"] or just a string
-		if (Array.isArray(localised)) {
-			const name = localised[0];
-			if (typeof name === 'string' && name.includes('.')) {
-				return name.split('.')[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-			}
-			return name;
-		}
-		return localised;
-	}
-
 	$: progressPercent = currentResearch?.progress ? (currentResearch.progress * 100).toFixed(1) : '0';
-	$: displayName = currentResearch ? getLocalizedName(currentResearch.localised_name) : 'No Active Research';
+	$: displayName = currentResearch ? prettifyResearchName(currentResearch.name) : 'No Active Research';
 	$: level = currentResearch?.level || 1;
 </script>
 
