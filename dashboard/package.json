@@ -1,0 +1,35 @@
+{
+  "name": "factorio-megabase-dashboard",
+  "version": "1.0.0",
+  "description": "Real-time web dashboard for Factorio Megabase Exporter mod statistics",
+  "author": "",
+  "license": "Apache 2.0",
+  "keywords": [
+    "factorio",
+    "dashboard",
+    "monitoring",
+    "svelte",
+    "typescript"
+  ],
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "start": "bun run server.ts"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.50.1",
+    "@types/bun": "latest",
+    "svelte": "^5.48.2",
+    "svelte-check": "^4.3.5",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1"
+  }
+}

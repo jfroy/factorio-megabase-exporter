@@ -11,6 +11,33 @@ A lightweight Factorio mod that exports key statistics about your factory to a J
 - **Research monitoring**: Tracks current research progress and research queue
 - **Multi-surface support**: Aggregates statistics across all surfaces (planets and platforms)
 - **JSON export**: Outputs to `script-output/megabase-exporter/stats.json`
+- **Web Dashboard**: Real-time visualization dashboard (see [dashboard/](dashboard/))
+
+## Dashboard
+
+This mod now includes a modern web dashboard for real-time visualization of your factory statistics!
+
+![Dashboard Preview](screenshots/Screenshot_20260125_094808.png)
+
+### Quick Start
+
+1. Ensure the mod is running in Factorio
+2. Navigate to the dashboard directory:
+   ```bash
+   cd dashboard
+   ```
+3. Install dependencies and build:
+   ```bash
+   bun install
+   bun run build
+   ```
+4. Start the server:
+   ```bash
+   bun run start
+   ```
+5. Open http://localhost:3000 in your browser
+
+See [dashboard/README.md](dashboard/README.md) for detailed documentation.
 
 ## Installation
 
@@ -35,60 +62,17 @@ The mod writes statistics to `script-output/megabase-exporter/stats.json` every 
   "game_time": 36000,
   "science_packs": {
     "total": {
-      "automation-science-pack": {
-        "normal": {
-          "produced": 1500,
-          "consumed": 1200,
-          "stored": 300
-        },
-        "uncommon": {
-          "produced": 50,
-          "consumed": 40,
-          "stored": 10
-        },
-        "rare": {
-          "produced": 0,
-          "consumed": 0,
-          "stored": 0
-        },
-        "epic": {
-          "produced": 0,
-          "consumed": 0,
-          "stored": 0
-        },
-        "legendary": {
-          "produced": 0,
-          "consumed": 0,
-          "stored": 0
-        }
-      },
-      "science": {
-        "normal": {
-          "produced": 3000,
-          "consumed": 2800,
-          "stored": 200
-        }
+      "automation-science-pack_normal": {
+        "produced": 1500,
+        "consumed": 1200,
+        "stored": 300
       }
     },
     "rate_1m": {
-      "automation-science-pack": {
-        "normal": {
-          "produced": 120,
-          "consumed": 100,
-          "stored": 20
-        },
-        "uncommon": {
-          "produced": 5,
-          "consumed": 4,
-          "stored": 1
-        }
-      },
-      "science": {
-        "normal": {
-          "produced": 250,
-          "consumed": 240,
-          "stored": 10
-        }
+      "automation-science-pack_normal": {
+        "produced": 120,
+        "consumed": 100,
+        "stored": 20
       }
     }
   },
@@ -100,18 +84,6 @@ The mod writes statistics to `script-output/megabase-exporter/stats.json` every 
         "localised_name": ["technology-name.advanced-electronics"],
         "level": 1,
         "progress": 0.45
-      },
-      {
-        "position": 2,
-        "name": "advanced-material-processing",
-        "localised_name": ["technology-name.advanced-material-processing"],
-        "level": 1
-      },
-      {
-        "position": 3,
-        "name": "automation-2",
-        "localised_name": ["technology-name.automation-2"],
-        "level": 1
       }
     ]
   }
@@ -187,7 +159,7 @@ For example:
 
 ## Use Cases
 
-- Real-time monitoring dashboards
+- Real-time monitoring dashboards (via included web dashboard)
 - External analytics and reporting
 - Factory optimization tools
 - Stream overlays for Factorio broadcasts
