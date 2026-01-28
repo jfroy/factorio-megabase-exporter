@@ -306,7 +306,7 @@
 	}
 
 	/* Responsive Design */
-	@media (max-width: 1400px) {
+	@media (max-width: 1200px) {
 		.main-content {
 			grid-template-columns: 1fr;
 		}
