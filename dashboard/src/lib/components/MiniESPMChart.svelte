@@ -207,6 +207,9 @@
 		width: 100%;
 		height: 150px;
 		position: relative;
+		box-sizing: border-box;
+		max-width: 100%;
+		overflow: hidden;
 	}
 
 	canvas {
@@ -223,5 +226,18 @@
 		font-family: monospace;
 		font-size: 0.75rem;
 		pointer-events: none;
+	}
+
+	/* Mobile optimizations */
+	@media (max-width: 768px) {
+		.mini-chart {
+			height: 120px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.mini-chart {
+			height: 100px;
+		}
 	}
 </style>

@@ -114,6 +114,9 @@
 		padding: 1rem;
 		height: 100%;
 		overflow-y: auto;
+		box-sizing: border-box;
+		max-width: 100%;
+		overflow-x: hidden;
 	}
 
 	h3 {
@@ -140,6 +143,9 @@
 		background: rgba(0, 0, 0, 0.3);
 		border-radius: 4px;
 		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-sizing: border-box;
+		min-width: 0;
+		overflow: hidden;
 	}
 
 	.pack-info {
@@ -190,6 +196,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
+		min-width: 0;
 	}
 
 	.bar-group {
@@ -197,6 +204,7 @@
 		grid-template-columns: 50px 1fr 80px;
 		align-items: center;
 		gap: 0.5rem;
+		min-width: 0;
 	}
 
 	.label {
@@ -232,5 +240,86 @@
 		color: #a0a0a0;
 		font-family: monospace;
 		padding: 2rem;
+	}
+
+	/* Mobile optimizations */
+	@media (max-width: 768px) {
+		.rate-indicator {
+			padding: 0.75rem;
+		}
+
+		h3 {
+			font-size: 1rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.rates-grid {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+		}
+
+		.rate-row {
+			padding: 0.5rem;
+		}
+
+		.pack-icon-wrapper,
+		.pack-icon {
+			width: 28px;
+			height: 28px;
+		}
+
+		.pack-name {
+			font-size: 0.8rem;
+		}
+
+		.bar-group {
+			grid-template-columns: 45px 1fr 70px;
+			gap: 0.4rem;
+		}
+
+		.label {
+			font-size: 0.7rem;
+		}
+
+		.value {
+			font-size: 0.75rem;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.rate-indicator {
+			padding: 0.5rem;
+		}
+
+		.rate-row {
+			padding: 0.4rem;
+		}
+
+		.pack-icon-wrapper,
+		.pack-icon {
+			width: 24px;
+			height: 24px;
+		}
+
+		.pack-name {
+			font-size: 0.75rem;
+		}
+
+		.bar-group {
+			grid-template-columns: 40px 1fr 60px;
+			gap: 0.3rem;
+		}
+
+		.label {
+			font-size: 0.65rem;
+		}
+
+		.value {
+			font-size: 0.7rem;
+		}
+
+		.bar-container {
+			height: 14px;
+		}
 	}
 </style>

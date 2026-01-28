@@ -60,6 +60,9 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
+		box-sizing: border-box;
+		max-width: 100%;
+		overflow-x: hidden;
 	}
 
 	h3 {
@@ -135,6 +138,8 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
+		min-width: 0;
+		overflow: hidden;
 	}
 
 	.name {
@@ -142,6 +147,8 @@
 		font-family: monospace;
 		font-size: 0.9rem;
 		font-weight: bold;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
 	}
 
 	.level {
@@ -175,5 +182,65 @@
 
 	.queue-list::-webkit-scrollbar-thumb:hover {
 		background: rgba(255, 119, 0, 0.5);
+	}
+
+	/* Mobile optimizations */
+	@media (max-width: 768px) {
+		.research-queue {
+			padding: 0.75rem;
+		}
+
+		h3 {
+			font-size: 1rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.queue-item {
+			padding: 0.5rem;
+			gap: 0.5rem;
+		}
+
+		.position {
+			width: 28px;
+			height: 28px;
+			font-size: 0.8rem;
+		}
+
+		.tech-icon-wrapper,
+		.tech-icon {
+			width: 28px;
+			height: 28px;
+		}
+
+		.name {
+			font-size: 0.8rem;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.research-queue {
+			padding: 0.5rem;
+		}
+
+		.queue-item {
+			padding: 0.4rem;
+			gap: 0.4rem;
+		}
+
+		.position {
+			width: 24px;
+			height: 24px;
+			font-size: 0.75rem;
+		}
+
+		.tech-icon-wrapper,
+		.tech-icon {
+			width: 24px;
+			height: 24px;
+		}
+
+		.name {
+			font-size: 0.75rem;
+		}
 	}
 </style>

@@ -222,6 +222,7 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
+		max-width: 100%;
 	}
 
 	.header {
@@ -243,12 +244,15 @@
 		flex-direction: column;
 		gap: 1rem;
 		flex: 1;
+		max-width: 100%;
+		overflow: hidden;
 	}
 
 	.tech-info {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		max-width: 100%;
 	}
 
 	.tech-header {
@@ -256,6 +260,8 @@
 		flex-direction: row;
 		align-items: center;
 		gap: 1rem;
+		max-width: 100%;
+		overflow: hidden;
 	}
 
 	.tech-icon-wrapper {
@@ -290,6 +296,8 @@
 		font-family: monospace;
 		font-size: 1.1rem;
 		font-weight: bold;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
 	}
 
 	.tech-level {
@@ -390,6 +398,8 @@
 	.espm-chart-section {
 		margin-top: 0;
 		padding-top: 0;
+		max-width: 100%;
+		overflow: hidden;
 	}
 
 	.no-research {
@@ -400,5 +410,81 @@
 		color: #a0a0a0;
 		font-family: monospace;
 		padding: 2rem;
+	}
+
+	/* Mobile optimizations */
+	@media (max-width: 768px) {
+		.content {
+			padding: 0.75rem;
+			gap: 0.75rem;
+		}
+
+		.header {
+			padding: 0.5rem 0.75rem;
+		}
+
+		h3 {
+			font-size: 1rem;
+		}
+
+		.tech-icon-wrapper {
+			width: 48px;
+			height: 48px;
+		}
+
+		.tech-icon {
+			width: 48px;
+			height: 48px;
+		}
+
+		.tech-name {
+			font-size: 0.95rem;
+		}
+
+		.stats-box {
+			padding: 0.5rem 0.75rem;
+			gap: 1rem;
+		}
+
+		.stat-label {
+			font-size: 0.7rem;
+		}
+
+		.stat-value {
+			font-size: 0.9rem;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.content {
+			padding: 0.5rem;
+			gap: 0.5rem;
+		}
+
+		.tech-header {
+			gap: 0.75rem;
+		}
+
+		.tech-icon-wrapper {
+			width: 40px;
+			height: 40px;
+		}
+
+		.tech-icon {
+			width: 40px;
+			height: 40px;
+		}
+
+		.tech-name {
+			font-size: 0.85rem;
+		}
+
+		.progress-bar {
+			height: 28px;
+		}
+
+		.progress-text {
+			font-size: 0.8rem;
+		}
 	}
 </style>

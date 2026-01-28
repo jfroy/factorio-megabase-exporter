@@ -110,6 +110,10 @@
 		display: flex;
 		flex-direction: column;
 		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+		box-sizing: border-box;
+		max-width: 100vw;
+		overflow-x: hidden;
+		width: 100%;
 	}
 
 	/* Header */
@@ -118,6 +122,8 @@
 		border-bottom: 2px solid rgba(255, 119, 0, 0.5);
 		padding: 1rem 2rem;
 		backdrop-filter: blur(10px);
+		box-sizing: border-box;
+		width: 100%;
 	}
 
 	.header-content {
@@ -128,6 +134,8 @@
 		align-items: center;
 		gap: 2rem;
 		flex-wrap: wrap;
+		box-sizing: border-box;
+		width: 100%;
 	}
 
 	.title-section h1 {
@@ -209,18 +217,24 @@
 		display: grid;
 		grid-template-columns: 1fr 500px;
 		gap: 1.5rem;
+		box-sizing: border-box;
+		overflow-x: hidden;
 	}
 
 	.left-column {
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
+		min-width: 0;
+		overflow-x: hidden;
 	}
 
 	.right-column {
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
+		min-width: 0;
+		overflow-x: hidden;
 	}
 
 	.chart-card {
@@ -230,6 +244,9 @@
 		padding: 1.5rem;
 		min-height: 350px;
 		backdrop-filter: blur(5px);
+		box-sizing: border-box;
+		min-width: 0;
+		overflow-x: hidden;
 	}
 
 	.research-card {
@@ -239,6 +256,8 @@
 		backdrop-filter: blur(5px);
 		padding: 0;
 		overflow: hidden;
+		box-sizing: border-box;
+		min-width: 0;
 	}
 
 	.queue-card {
@@ -248,6 +267,9 @@
 		backdrop-filter: blur(5px);
 		min-height: 250px;
 		max-height: 480px;
+		box-sizing: border-box;
+		min-width: 0;
+		overflow-x: hidden;
 	}
 
 	.rates-card {
@@ -256,6 +278,9 @@
 		border-radius: 8px;
 		backdrop-filter: blur(5px);
 		min-height: 300px;
+		box-sizing: border-box;
+		min-width: 0;
+		overflow-x: hidden;
 	}
 
 	/* Footer */
@@ -264,6 +289,8 @@
 		border-top: 1px solid rgba(255, 119, 0, 0.3);
 		padding: 1rem 2rem;
 		backdrop-filter: blur(10px);
+		box-sizing: border-box;
+		width: 100%;
 	}
 
 	.footer-content {
@@ -276,6 +303,9 @@
 		color: #a0a0a0;
 		font-family: monospace;
 		font-size: 0.85rem;
+		box-sizing: border-box;
+		width: 100%;
+		flex-wrap: wrap;
 	}
 
 	.footer a {
@@ -317,23 +347,81 @@
 	}
 
 	@media (max-width: 768px) {
+		.header {
+			padding: 0.5rem;
+		}
+
 		.header-content {
 			flex-direction: column;
 			align-items: flex-start;
+			gap: 0.75rem;
 		}
 
 		.stats-section {
 			width: 100%;
 			justify-content: space-between;
+			flex-wrap: wrap;
+			gap: 0.5rem;
 		}
 
 		.main-content {
-			padding: 1rem;
-			gap: 1rem;
+			padding: 0.5rem;
+			gap: 0.5rem;
 		}
 
 		.title-section h1 {
-			font-size: 1.4rem;
+			font-size: 1.1rem;
+			white-space: nowrap;
+		}
+
+		.chart-card {
+			padding: 0.5rem;
+		}
+
+		.queue-card,
+		.rates-card {
+			padding: 0.5rem;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.header {
+			padding: 0.5rem;
+		}
+
+		.title-section h1 {
+			font-size: 0.95rem;
+		}
+
+		.main-content {
+			padding: 0.5rem;
+			gap: 0.5rem;
+		}
+
+		.stat-label {
+			font-size: 0.65rem;
+		}
+
+		.stat-value {
+			font-size: 0.85rem;
+		}
+
+		.refresh-btn {
+			padding: 0.35rem 0.6rem;
+			font-size: 0.8rem;
+		}
+
+		.footer {
+			padding: 0.75rem 0.5rem;
+		}
+
+		.footer-content {
+			font-size: 0.75rem;
+			gap: 0.5rem;
+		}
+
+		.git-hash {
+			display: none;
 		}
 	}
 </style>

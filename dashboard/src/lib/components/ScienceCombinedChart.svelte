@@ -340,6 +340,9 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		box-sizing: border-box;
+		max-width: 100%;
+		overflow: hidden;
 	}
 
 	h3 {
@@ -357,6 +360,8 @@
 		width: 100%;
 		min-height: 300px;
 		position: relative;
+		box-sizing: border-box;
+		overflow: hidden;
 	}
 
 	canvas {
@@ -372,5 +377,27 @@
 		color: #a0a0a0;
 		font-family: monospace;
 		pointer-events: none;
+	}
+
+	/* Mobile optimizations */
+	@media (max-width: 768px) {
+		h3 {
+			font-size: 1rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.chart-container {
+			min-height: 250px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		h3 {
+			font-size: 0.95rem;
+		}
+
+		.chart-container {
+			min-height: 200px;
+		}
 	}
 </style>
