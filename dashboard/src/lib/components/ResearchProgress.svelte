@@ -134,19 +134,43 @@
 		
 		<div class="content">
 			<div class="tech-info">
-				{#if techIconUrl}
-					<div class="tech-icon-wrapper">
-						<img 
-							src={techIconUrl} 
-							alt={displayName} 
-							class="tech-icon"
-						/>
+				<div class="tech-header">
+					{#if techIconUrl}
+						<div class="tech-icon-wrapper">
+							<img 
+								src={techIconUrl} 
+								alt={displayName} 
+								class="tech-icon"
+							/>
+						</div>
+					{/if}
+					<div class="tech-details">
+						<div class="tech-name">
+							{displayName}{#if level > 1}&nbsp;<span class="tech-level">{level}</span>{/if}
+						</div>
 					</div>
-				{/if}
-				<div class="tech-details">
-					<div class="tech-name">
-						{displayName}{#if level > 1}&nbsp;<span class="tech-level">{level}</span>{/if}
+				</div>
+				
+				<div class="stats-box desktop-stats">
+					<div class="stat">
+						<span class="stat-label">eSPM:</span>
+						<span class="stat-value">{formatNumberWithCommas(Math.round(eSPM))}</span>
 					</div>
+					
+					{#if currentResearch.progress !== undefined && currentResearch.progress < 1}
+						<div class="stat">
+							<span class="stat-label">Est. Time:</span>
+							<span class="stat-value">
+							{#if estimatedTime !== null}
+								{formatTime(estimatedTime)}
+							{:else if progressHistory.length < 2}
+								<span class="calculating">Calculating...</span>
+								{:else}
+									∞
+								{/if}
+							</span>
+						</div>
+					{/if}
 				</div>
 			</div>
 			
@@ -155,7 +179,7 @@
 				<div class="progress-text">{progressPercent}%</div>
 			</div>
 			
-			<div class="stats-grid">
+			<div class="stats-box mobile-stats">
 				<div class="stat">
 					<span class="stat-label">eSPM:</span>
 					<span class="stat-value">{formatNumberWithCommas(Math.round(eSPM))}</span>
@@ -223,6 +247,12 @@
 
 	.tech-info {
 		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.tech-header {
+		display: flex;
 		flex-direction: row;
 		align-items: center;
 		gap: 1rem;
@@ -252,6 +282,7 @@
 		flex-direction: column;
 		gap: 0.25rem;
 		flex: 1;
+		min-width: 0; /* Allow text to wrap */
 	}
 
 	.tech-name {
@@ -263,6 +294,70 @@
 
 	.tech-level {
 		color: #ffcc00;
+	}
+
+	.stats-box {
+		display: flex;
+		flex-direction: row;
+		gap: 1.5rem;
+		padding: 0.75rem 1rem;
+		background: rgba(0, 0, 0, 0.3);
+		border: 1px solid rgba(255, 119, 0, 0.2);
+		border-radius: 4px;
+		justify-content: center;
+	}
+
+	/* Hide desktop stats on mobile, show mobile stats */
+	.desktop-stats {
+		display: none;
+	}
+
+	.mobile-stats {
+		display: flex;
+	}
+
+	.stat {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		text-align: center;
+	}
+
+	.stat-label {
+		color: #a0a0a0;
+		font-family: monospace;
+		font-size: 0.75rem;
+	}
+
+	.stat-value {
+		color: #e0e0e0;
+		font-family: monospace;
+		font-size: 1rem;
+		font-weight: bold;
+	}
+
+	.calculating {
+		color: #ffaa00;
+		font-size: 0.85rem;
+		font-style: italic;
+	}
+
+	/* Responsive layout: when sufficient horizontal space, place stats next to tech header */
+	@media (min-width: 768px) {
+		.tech-info {
+			flex-direction: row;
+			align-items: flex-start;
+			justify-content: space-between;
+		}
+
+		.desktop-stats {
+			display: flex;
+			flex-shrink: 0;
+		}
+
+		.mobile-stats {
+			display: none;
+		}
 	}
 
 	.progress-bar {
@@ -292,44 +387,9 @@
 		text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
 	}
 
-	.stats-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1rem;
-		padding-top: 0.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	.stat {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-		text-align: center;
-	}
-
-	.stat-label {
-		color: #a0a0a0;
-		font-family: monospace;
-		font-size: 0.75rem;
-	}
-
-	.stat-value {
-		color: #e0e0e0;
-		font-family: monospace;
-		font-size: 1rem;
-		font-weight: bold;
-	}
-
-	.calculating {
-		color: #ffaa00;
-		font-size: 0.85rem;
-		font-style: italic;
-	}
-
 	.espm-chart-section {
-		margin-top: 1rem;
-		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		margin-top: 0;
+		padding-top: 0;
 	}
 
 	.no-research {

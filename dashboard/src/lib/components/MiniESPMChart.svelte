@@ -11,10 +11,21 @@
 	function updateChart() {
 		if (!chart || !$historyStore.length) return;
 
-		// Create time labels (relative time in minutes)
-		const labels = $historyStore.map((entry, index) => {
-			const minutesAgo = ($historyStore.length - index - 1) * 5 / 60; // 5 seconds per entry
-			return minutesAgo > 0 ? `-${minutesAgo.toFixed(1)}m` : 'now';
+		// Create time labels from actual timestamps
+		const now = Date.now();
+		const labels = $historyStore.map((entry) => {
+			const secondsAgo = Math.round((now - entry.timestamp) / 1000);
+			
+			if (secondsAgo < 60) {
+				return `-${secondsAgo}s`;
+			} else if (secondsAgo < 3600) {
+				const minutes = Math.round(secondsAgo / 60);
+				return `-${minutes}m`;
+			} else {
+				const hours = Math.floor(secondsAgo / 3600);
+				const minutes = Math.round((secondsAgo % 3600) / 60);
+				return `-${hours}h ${minutes}m`;
+			}
 		});
 
 		// Extract eSPM data from science_normal production rate
@@ -25,6 +36,10 @@
 			}
 			return 0;
 		});
+
+		// Calculate Y axis range with headroom
+		const maxValue = Math.max(...data, 0);
+		const yMax = maxValue * 1.1; // Add 10% headroom
 
 		chart.data.labels = labels;
 		chart.data.datasets = [{
@@ -41,6 +56,12 @@
 			pointHoverBorderColor: '#ffffff',
 			pointHoverBackgroundColor: '#ffa500'
 		}];
+
+		// Update Y axis scale
+		if (chart.options.scales?.y) {
+			chart.options.scales.y.min = 0;
+			chart.options.scales.y.max = yMax;
+		}
 		
 		chart.update('none'); // Update without animation
 	}
@@ -175,9 +196,8 @@
 <style>
 	.mini-chart {
 		width: 100%;
-		height: 120px;
+		height: 150px;
 		position: relative;
-		margin-top: 0.5rem;
 	}
 
 	canvas {

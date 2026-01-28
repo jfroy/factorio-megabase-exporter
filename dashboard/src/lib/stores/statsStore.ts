@@ -11,13 +11,13 @@ export const errorStore = writable<string | null>(null);
 // Store for last update timestamp
 export const lastUpdateStore = writable<number>(Date.now());
 
-// History store for time-series data (last 60 data points = 5 minutes at 5 second intervals)
+// History store for time-series data (last one hour of data)
 interface HistoryEntry {
 	timestamp: number;
 	data: FactorioStats;
 }
 
-const MAX_HISTORY = 60;
+const MAX_HISTORY_MS = 60 * 60 * 1000; // 1 hour in milliseconds
 export const historyStore = writable<HistoryEntry[]>([]);
 
 // Derived store for parsed science packs
@@ -82,12 +82,11 @@ async function fetchStats(): Promise<void> {
 
 		// Add to history
 		historyStore.update(history => {
-			const newHistory = [...history, { timestamp: Date.now(), data }];
-			// Keep only the last MAX_HISTORY entries
-			if (newHistory.length > MAX_HISTORY) {
-				return newHistory.slice(-MAX_HISTORY);
-			}
-			return newHistory;
+			const now = Date.now();
+			const newHistory = [...history, { timestamp: now, data }];
+			// Keep only entries from the last hour
+			const cutoffTime = now - MAX_HISTORY_MS;
+			return newHistory.filter(entry => entry.timestamp >= cutoffTime);
 		});
 	} catch (error) {
 		console.error('Error fetching stats:', error);
