@@ -12,6 +12,7 @@
 		if (!chart || !$historyStore.length) return;
 
 		// Create time labels from actual timestamps
+		// Always include enough detail to avoid duplicate labels
 		const now = Date.now();
 		const labels = $historyStore.map((entry) => {
 			const secondsAgo = Math.round((now - entry.timestamp) / 1000);
@@ -19,12 +20,15 @@
 			if (secondsAgo < 60) {
 				return `-${secondsAgo}s`;
 			} else if (secondsAgo < 3600) {
-				const minutes = Math.round(secondsAgo / 60);
-				return `-${minutes}m`;
+				const minutes = Math.floor(secondsAgo / 60);
+				const seconds = secondsAgo % 60;
+				return `-${minutes}m ${seconds}s`;
 			} else {
 				const hours = Math.floor(secondsAgo / 3600);
-				const minutes = Math.round((secondsAgo % 3600) / 60);
-				return `-${hours}h ${minutes}m`;
+				const remainingSeconds = secondsAgo % 3600;
+				const minutes = Math.floor(remainingSeconds / 60);
+				const seconds = remainingSeconds % 60;
+				return `-${hours}h ${minutes}m ${seconds}s`;
 			}
 		});
 
@@ -84,6 +88,11 @@
 					intersect: false
 				},
 				plugins: {
+					decimation: {
+						enabled: true,
+						algorithm: 'lttb', // Largest-Triangle-Three-Buckets algorithm for downsampling
+						samples: 100 // Target number of samples to display
+					},
 					legend: {
 						display: false
 					},
