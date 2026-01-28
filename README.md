@@ -5,7 +5,7 @@ A lightweight Factorio mod that exports key statistics about your factory to a J
 ## Features
 
 - **Low overhead**: Statistics are collected every 10 seconds (configurable)
-- **Science pack tracking**: Monitors production, consumption, and storage for all 12 science types, plus overall science rate (eSPM)
+- **Science pack tracking**: Monitors production and consumption for all 12 science types, plus overall science rate (eSPM)
 - **Quality support**: Tracks all quality levels
 - **Rate monitoring**: Provides both lifetime totals and 1-minute rates
 - **Research monitoring**: Tracks current research progress and research queue
@@ -72,144 +72,116 @@ The mod writes statistics to `script-output/megabase-exporter/stats.json` every 
       "automation-science-pack_normal": {
         "produced": 64524062,
         "consumed": 64525753,
-        "stored": 0
       },
       "automation-science-pack_uncommon": {
         "produced": 1071919604,
         "consumed": 1072468798,
-        "stored": 0
       },
       "logistic-science-pack_uncommon": {
         "produced": 1071894869,
         "consumed": 1072453874,
-        "stored": 0
       },
       "military-science-pack_uncommon": {
         "produced": 318464516,
         "consumed": 319144236,
-        "stored": 0
       },
       "chemical-science-pack_uncommon": {
         "produced": 1072036646,
         "consumed": 1072689888,
-        "stored": 0
       },
       "production-science-pack_uncommon": {
         "produced": 836664214,
         "consumed": 837261852,
-        "stored": 0
       },
       "utility-science-pack_uncommon": {
         "produced": 516113943,
         "consumed": 516725292,
-        "stored": 0
       },
       "space-science-pack_legendary": {
         "produced": 172088124,
         "consumed": 173178650,
-        "stored": 0
       },
       "metallurgic-science-pack_uncommon": {
         "produced": 124736116,
         "consumed": 128826741,
-        "stored": 0
       },
       "electromagnetic-science-pack_uncommon": {
         "produced": 322065010,
         "consumed": 324054486,
-        "stored": 0
       },
       "agricultural-science-pack_normal": {
         "produced": 585392902,
         "consumed": 1144922038,
-        "stored": 0
       },
       "cryogenic-science-pack_uncommon": {
         "produced": 135408885,
         "consumed": 140261050,
-        "stored": 0
       },
       "promethium-science-pack_normal": {
         "produced": 162625054,
         "consumed": 168704270,
-        "stored": 0
       },
       "science_normal": {
         "produced": 0,
         "consumed": 28930544688,
-        "stored": 0
       },
     },
     "rate_1m": {
       "automation-science-pack_normal": {
         "produced": 0,
         "consumed": 0,
-        "stored": 0
       },
       "automation-science-pack_uncommon": {
         "produced": 51606.833333333328482694923877716064453125,
         "consumed": 55542.25,
-        "stored": 0
       },
       "logistic-science-pack_uncommon": {
         "produced": 52440.666666666671517305076122283935546875,
         "consumed": 55542.25,
-        "stored": 0
       },
       "military-science-pack_uncommon": {
         "produced": 53334.3333333333357586525380611419677734375,
         "consumed": 55542.1666666666642413474619388580322265625,
-        "stored": 0
       },
       "chemical-science-pack_uncommon": {
         "produced": 53758.6666666666642413474619388580322265625,
         "consumed": 55542.25,
-        "stored": 0
       },
       "production-science-pack_uncommon": {
         "produced": 52664,
         "consumed": 55543.16666666665696538984775543212890625,
-        "stored": 0
       },
       "utility-science-pack_uncommon": {
         "produced": 53266.5000000000072759576141834259033203125,
         "consumed": 55542.25,
-        "stored": 0
       },
       "space-science-pack_legendary": {
         "produced": 18330,
         "consumed": 18447.916666666671517305076122283935546875,
-        "stored": 0
       },
       "metallurgic-science-pack_uncommon": {
         "produced": 87759.5,
         "consumed": 55542.1666666666642413474619388580322265625,
-        "stored": 0
       },
       "electromagnetic-science-pack_uncommon": {
         "produced": 29434.25,
         "consumed": 55542.1666666666642413474619388580322265625,
-        "stored": 0
       },
       "agricultural-science-pack_normal": {
         "produced": 115.0000000000000142108547152020037174224853515625,
         "consumed": 127730.416666666642413474619388580322265625,
-        "stored": 0
       },
       "cryogenic-science-pack_uncommon": {
         "produced": 44685.333333333328482694923877716064453125,
         "consumed": 55542.1666666666642413474619388580322265625,
-        "stored": 0
       },
       "promethium-science-pack_normal": {
         "produced": 64886.6666666666642413474619388580322265625,
         "consumed": 111166.916666666671517305076122283935546875,
-        "stored": 0
       },
       "science_normal": {
         "produced": 2023300.0833333334885537624359130859375,
         "consumed": 0,
-        "stored": 0
       }
     }
   },

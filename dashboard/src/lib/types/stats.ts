@@ -21,7 +21,6 @@ export type SciencePackType =
 export interface SciencePackStats {
 	produced: number;
 	consumed: number;
-	stored: number;
 }
 
 // Research item in the queue
@@ -91,7 +90,7 @@ export function getParsedSciencePacks(stats: FactorioStats): ParsedSciencePack[]
 		if (!parsed) continue;
 
 		const total = stats.science_packs.total[key];
-		const rate = stats.science_packs.rate_1m[key] || { produced: 0, consumed: 0, stored: 0 };
+		const rate = stats.science_packs.rate_1m[key] || { produced: 0, consumed: 0 };
 
 		packs.push({
 			type: parsed.type,

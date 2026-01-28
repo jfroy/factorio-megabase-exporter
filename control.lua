@@ -46,12 +46,10 @@ local function get_science_stats(force)
       stats.total[key_str] = {
         produced = 0,
         consumed = 0,
-        stored = 0,
       }
       stats.rate_1m[key_str] = {
         produced = 0,
         consumed = 0,
-        stored = 0,
       }
     end
   end
@@ -67,11 +65,9 @@ local function get_science_stats(force)
 
         stats.total[key_str].produced = stats.total[key_str].produced + production_stats.get_output_count(stats_id)
         stats.total[key_str].consumed = stats.total[key_str].consumed + production_stats.get_input_count(stats_id)
-        stats.total[key_str].stored = stats.total[key_str].stored + production_stats.get_storage_count(stats_id)
 
         stats.rate_1m[key_str].produced = stats.rate_1m[key_str].produced + production_stats.get_flow_count{name=stats_id, category = 'input', precision_index = defines.flow_precision_index.one_minute}
         stats.rate_1m[key_str].consumed = stats.rate_1m[key_str].consumed + production_stats.get_flow_count{name=stats_id, category = 'output', precision_index = defines.flow_precision_index.one_minute}
-        stats.rate_1m[key_str].stored = stats.rate_1m[key_str].stored + production_stats.get_flow_count{name=stats_id, category = 'storage', precision_index = defines.flow_precision_index.one_minute}
       end
     end
   end
