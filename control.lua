@@ -39,21 +39,6 @@ local function get_science_stats(force)
     rate_1m = {}
   }
 
-  -- Initialize stats for all science packs and quality combinations
-  for _, science_name in ipairs(SCIENCE_PACKS) do
-    for _, quality in ipairs(QUALITIES) do
-      local key_str = science_name .. "_" .. quality
-      stats.total[key_str] = {
-        produced = 0,
-        consumed = 0,
-      }
-      stats.rate_1m[key_str] = {
-        produced = 0,
-        consumed = 0,
-      }
-    end
-  end
-
   -- Iterate through all surfaces and sum up statistics
   for _, surface in pairs(game.surfaces) do
     local production_stats = force.get_item_production_statistics(surface)
@@ -63,11 +48,29 @@ local function get_science_stats(force)
         local key_str = science_name .. "_" .. quality
         local stats_id = {name = science_name, quality = quality}
 
-        stats.total[key_str].produced = stats.total[key_str].produced + production_stats.get_output_count(stats_id)
-        stats.total[key_str].consumed = stats.total[key_str].consumed + production_stats.get_input_count(stats_id)
+        -- Get values for this science pack
+        local total_produced = production_stats.get_output_count(stats_id)
+        local total_consumed = production_stats.get_input_count(stats_id)
+        local rate_produced = production_stats.get_flow_count{name=stats_id, category = 'input', precision_index = defines.flow_precision_index.one_minute}
+        local rate_consumed = production_stats.get_flow_count{name=stats_id, category = 'output', precision_index = defines.flow_precision_index.one_minute}
 
-        stats.rate_1m[key_str].produced = stats.rate_1m[key_str].produced + production_stats.get_flow_count{name=stats_id, category = 'input', precision_index = defines.flow_precision_index.one_minute}
-        stats.rate_1m[key_str].consumed = stats.rate_1m[key_str].consumed + production_stats.get_flow_count{name=stats_id, category = 'output', precision_index = defines.flow_precision_index.one_minute}
+        -- Add total stats if there's any lifetime production or consumption
+        if total_produced > 0 or total_consumed > 0 then
+          if not stats.total[key_str] then
+            stats.total[key_str] = {produced = 0, consumed = 0}
+          end
+          stats.total[key_str].produced = stats.total[key_str].produced + total_produced
+          stats.total[key_str].consumed = stats.total[key_str].consumed + total_consumed
+        end
+
+        -- Add rate stats only if there's current production or consumption
+        if rate_produced > 0 or rate_consumed > 0 then
+          if not stats.rate_1m[key_str] then
+            stats.rate_1m[key_str] = {produced = 0, consumed = 0}
+          end
+          stats.rate_1m[key_str].produced = stats.rate_1m[key_str].produced + rate_produced
+          stats.rate_1m[key_str].consumed = stats.rate_1m[key_str].consumed + rate_consumed
+        end
       end
     end
   end
