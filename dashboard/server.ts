@@ -1,3 +1,4 @@
+/// <reference types="bun-types" />
 import { watch } from 'fs';
 import { readFile, stat } from 'fs/promises';
 import { join } from 'path';
