@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { Chart, registerables } from 'chart.js';
+	import { Chart, registerables, type ChartOptions } from 'chart.js';
+	import 'chartjs-adapter-date-fns';
+	// @ts-ignore - chartjs-plugin-annotation types are not fully compatible
+	import annotationPlugin from 'chartjs-plugin-annotation';
 	import { historyStore } from '../stores/statsStore';
+	import { detectGaps, getSignificantGaps, formatGapDuration } from '../utils/gapDetection';
+	import { relativeTimeTickCallback, formatRelativeTime } from '../utils/timeFormatters';
 
-	Chart.register(...registerables);
+	Chart.register(...registerables, annotationPlugin);
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart | null = null;
@@ -11,41 +16,56 @@
 	function updateChart() {
 		if (!chart || !$historyStore.length) return;
 
-		// Create time labels from actual timestamps
-		// Always include enough detail to avoid duplicate labels
-		const now = Date.now();
-		const labels = $historyStore.map((entry) => {
-			const secondsAgo = Math.round((now - entry.timestamp) / 1000);
-			
-			if (secondsAgo < 60) {
-				return `-${secondsAgo}s`;
-			} else if (secondsAgo < 3600) {
-				const minutes = Math.floor(secondsAgo / 60);
-				const seconds = secondsAgo % 60;
-				return `-${minutes}m ${seconds}s`;
-			} else {
-				const hours = Math.floor(secondsAgo / 3600);
-				const remainingSeconds = secondsAgo % 3600;
-				const minutes = Math.floor(remainingSeconds / 60);
-				const seconds = remainingSeconds % 60;
-				return `-${hours}h ${minutes}m ${seconds}s`;
-			}
-		});
-
-		// Extract eSPM data from science_normal production rate
+		// Extract timestamps and eSPM data
+		const timestamps = $historyStore.map(entry => entry.timestamp);
 		const data = $historyStore.map((entry) => {
 			const scienceNormalKey = 'science_normal';
 			if (entry.data.science_packs.rate_1m[scienceNormalKey]) {
-				return entry.data.science_packs.rate_1m[scienceNormalKey].produced;
+				return {
+					x: entry.timestamp,
+					y: entry.data.science_packs.rate_1m[scienceNormalKey].produced
+				};
 			}
-			return 0;
+			return { x: entry.timestamp, y: 0 };
 		});
 
+		// Detect gaps (expected interval: 5000ms, threshold: 2x = 10 seconds)
+		const allGaps = detectGaps(timestamps, 5000, 2);
+		// Only annotate significant gaps (> 2 minutes)
+		const significantGaps = getSignificantGaps(allGaps, 120000);
+
 		// Calculate Y axis range with headroom
-		const maxValue = Math.max(...data, 0);
+		const values = data.map(d => d.y);
+		const maxValue = Math.max(...values, 0);
 		const yMax = maxValue * 1.1; // Add 10% headroom
 
-		chart.data.labels = labels;
+		// Create gap annotations
+		const annotations: any = {};
+		significantGaps.forEach((gap, index) => {
+			const midpoint = (gap.startTimestamp + gap.endTimestamp) / 2;
+			annotations[`gap${index}`] = {
+				type: 'line',
+				xMin: midpoint,
+				xMax: midpoint,
+				borderColor: 'rgba(255, 0, 0, 0.5)',
+				borderWidth: 2,
+				borderDash: [5, 5],
+				label: {
+					display: true,
+					content: formatGapDuration(gap.duration),
+					position: 'start',
+					backgroundColor: 'rgba(255, 0, 0, 0.8)',
+					color: '#ffffff',
+					font: {
+						family: 'monospace',
+						size: 9
+					},
+					padding: 4,
+					rotation: 0
+				}
+			};
+		});
+
 		chart.data.datasets = [{
 			label: 'eSPM',
 			data,
@@ -58,13 +78,21 @@
 			pointHoverRadius: 4,
 			pointHoverBorderWidth: 2,
 			pointHoverBorderColor: '#ffffff',
-			pointHoverBackgroundColor: '#ffa500'
+			pointHoverBackgroundColor: '#ffa500',
+			spanGaps: false // Don't connect across gaps
 		}];
 
 		// Update Y axis scale
 		if (chart.options.scales?.y) {
 			chart.options.scales.y.min = 0;
 			chart.options.scales.y.max = yMax;
+		}
+
+		// Update annotations
+		// @ts-ignore - annotation plugin types
+		if (chart.options.plugins?.annotation) {
+			// @ts-ignore - annotation plugin types
+			chart.options.plugins.annotation.annotations = annotations;
 		}
 		
 		chart.update('none'); // Update without animation
@@ -77,7 +105,6 @@
 		chart = new Chart(ctx, {
 			type: 'line',
 			data: {
-				labels: [],
 				datasets: []
 			},
 			options: {
@@ -95,6 +122,10 @@
 					},
 					legend: {
 						display: false
+					},
+					// @ts-ignore - annotation plugin types
+					annotation: {
+						annotations: {}
 					},
 					tooltip: {
 						enabled: true,
@@ -114,7 +145,8 @@
 						},
 						callbacks: {
 							title: function(context: any) {
-								return 'Time: ' + context[0].label;
+								const timestamp = context[0].parsed.x;
+								return 'Time: ' + formatRelativeTime(timestamp);
 							},
 							label: function(context: any) {
 								const value = context.parsed.y;
@@ -131,6 +163,7 @@
 				},
 				scales: {
 					x: {
+						type: 'time',
 						display: true,
 						grid: {
 							color: 'rgba(255, 255, 255, 0.05)',
@@ -143,7 +176,8 @@
 								size: 9
 							},
 							maxRotation: 0,
-							autoSkipPadding: 20
+							autoSkipPadding: 20,
+							callback: relativeTimeTickCallback
 						},
 						border: {
 							display: false

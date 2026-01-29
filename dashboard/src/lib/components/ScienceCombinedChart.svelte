@@ -1,13 +1,18 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { Chart, registerables } from 'chart.js';
+	import 'chartjs-adapter-date-fns';
+	// @ts-ignore - chartjs-plugin-annotation types are not fully compatible
+	import annotationPlugin from 'chartjs-plugin-annotation';
 	import { historyStore } from '../stores/statsStore';
 	import { getScienceColor } from '../utils/chartConfig';
 	import { defaultChartOptions } from '../utils/chartConfig';
 	import { getSciencePackShortName } from '../utils/formatters';
+	import { detectGaps, getSignificantGaps, formatGapDuration } from '../utils/gapDetection';
+	import { relativeTimeTickCallback, formatRelativeTime } from '../utils/timeFormatters';
 	import type { SciencePackType } from '../types/stats';
 
-	Chart.register(...registerables);
+	Chart.register(...registerables, annotationPlugin);
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart | null = null;
@@ -40,26 +45,13 @@
 
 		const activePacks = getActiveSciencePacks($historyStore);
 		
-		// Create time labels from actual timestamps
-		// Always include enough detail to avoid duplicate labels
-		const now = Date.now();
-		const labels = $historyStore.map((entry) => {
-			const secondsAgo = Math.round((now - entry.timestamp) / 1000);
-			
-			if (secondsAgo < 60) {
-				return `-${secondsAgo}s`;
-			} else if (secondsAgo < 3600) {
-				const minutes = Math.floor(secondsAgo / 60);
-				const seconds = secondsAgo % 60;
-				return `-${minutes}m ${seconds}s`;
-			} else {
-				const hours = Math.floor(secondsAgo / 3600);
-				const remainingSeconds = secondsAgo % 3600;
-				const minutes = Math.floor(remainingSeconds / 60);
-				const seconds = remainingSeconds % 60;
-				return `-${hours}h ${minutes}m ${seconds}s`;
-			}
-		});
+		// Extract timestamps for gap detection
+		const timestamps = $historyStore.map(entry => entry.timestamp);
+
+		// Detect gaps (expected interval: 5000ms, threshold: 2x = 10 seconds)
+		const allGaps = detectGaps(timestamps, 5000, 2);
+		// Only annotate significant gaps (> 2 minutes)
+		const significantGaps = getSignificantGaps(allGaps, 120000);
 
 		// Aggregate data by science pack type (sum across all qualities)
 		const datasets: any[] = [];
@@ -76,7 +68,10 @@
 						total += entry.data.science_packs.rate_1m[key].consumed;
 					}
 				}
-				return total;
+				return {
+					x: entry.timestamp,
+					y: total
+				};
 			});
 
 			// Production data (dashed line)
@@ -87,7 +82,10 @@
 						total += entry.data.science_packs.rate_1m[key].produced;
 					}
 				}
-				return total;
+				return {
+					x: entry.timestamp,
+					y: total
+				};
 			});
 
 		const color = getScienceColor(packName as SciencePackType);
@@ -106,7 +104,8 @@
 				pointHoverBorderWidth: 2,
 				pointHoverBorderColor: '#ffffff',
 				pointHoverBackgroundColor: color,
-				borderDash: [] // solid line
+				borderDash: [], // solid line
+				spanGaps: false
 			});
 
 			// Production dataset (dashed line)
@@ -122,12 +121,47 @@
 				pointHoverBorderWidth: 2,
 				pointHoverBorderColor: '#ffffff',
 				pointHoverBackgroundColor: color,
-				borderDash: [5, 5] // dashed line
+				borderDash: [5, 5], // dashed line
+				spanGaps: false
 			});
 		});
 
-		chart.data.labels = labels;
+		// Create gap annotations
+		const annotations: any = {};
+		significantGaps.forEach((gap, index) => {
+			const midpoint = (gap.startTimestamp + gap.endTimestamp) / 2;
+			annotations[`gap${index}`] = {
+				type: 'line',
+				xMin: midpoint,
+				xMax: midpoint,
+				borderColor: 'rgba(255, 0, 0, 0.5)',
+				borderWidth: 2,
+				borderDash: [5, 5],
+				label: {
+					display: true,
+					content: formatGapDuration(gap.duration),
+					position: 'start',
+					backgroundColor: 'rgba(255, 0, 0, 0.8)',
+					color: '#ffffff',
+					font: {
+						family: 'monospace',
+						size: 9
+					},
+					padding: 4,
+					rotation: 0
+				}
+			};
+		});
+
 		chart.data.datasets = datasets;
+
+		// Update annotations
+		// @ts-ignore - annotation plugin types
+		if (chart.options.plugins?.annotation) {
+			// @ts-ignore - annotation plugin types
+			chart.options.plugins.annotation.annotations = annotations;
+		}
+
 		chart.update('none'); // Update without animation
 	}
 
@@ -138,7 +172,6 @@
 		chart = new Chart(ctx, {
 			type: 'line',
 			data: {
-				labels: [],
 				datasets: []
 			},
 			options: {
@@ -152,6 +185,10 @@
 					},
 					title: {
 						display: false
+					},
+					// @ts-ignore - annotation plugin types
+					annotation: {
+						annotations: {}
 					},
 					tooltip: {
 						enabled: false,
@@ -181,10 +218,11 @@
 								
 								let innerHtml = '<div style="background: rgba(0, 0, 0, 0.9); border: 1px solid rgba(255, 119, 0, 0.5); border-radius: 4px; padding: 8px; font-family: monospace; font-size: 11px;">';
 								
-								// Title
-								titleLines.forEach((title: string) => {
-									innerHtml += '<div style="color: #ff7700; margin-bottom: 6px; font-weight: bold;">' + title + '</div>';
-								});
+								// Title - show timestamp
+								if (tooltipModel.dataPoints.length > 0) {
+									const timestamp = tooltipModel.dataPoints[0].parsed.x;
+									innerHtml += '<div style="color: #ff7700; margin-bottom: 6px; font-weight: bold;">Time: ' + formatRelativeTime(timestamp) + '</div>';
+								}
 								
 								// Body
 								tooltipModel.dataPoints.forEach((dataPoint: any, i: number) => {
@@ -297,6 +335,54 @@
 							boxHeight: 2,
 							padding: 10,
 							usePointStyle: false
+						}
+					}
+				},
+				scales: {
+					x: {
+						type: 'time',
+						display: true,
+						grid: {
+							color: 'rgba(255, 255, 255, 0.05)',
+							drawTicks: false
+						},
+						ticks: {
+							color: '#a0a0a0',
+							font: {
+								family: 'monospace',
+								size: 10
+							},
+							maxRotation: 0,
+							autoSkipPadding: 20,
+							callback: relativeTimeTickCallback
+						},
+						border: {
+							display: false
+						}
+					},
+					y: {
+						display: true,
+						grid: {
+							color: 'rgba(255, 255, 255, 0.05)',
+							drawTicks: false
+						},
+						ticks: {
+							color: '#a0a0a0',
+							font: {
+								family: 'monospace',
+								size: 10
+							},
+							callback: function(value: any) {
+								if (value >= 1000000) {
+									return (value / 1000000).toFixed(1) + 'M';
+								} else if (value >= 1000) {
+									return (value / 1000).toFixed(0) + 'k';
+								}
+								return value;
+							}
+						},
+						border: {
+							display: false
 						}
 					}
 				}
