@@ -92,15 +92,18 @@ const server = Bun.serve({
 			console.log(`Tech asset ${assetName} not found at ${assetFile.name}`);
 		}
 		
-		// Fallback: try stripping the number suffix (e.g., worker-robot-speed-7.png -> worker-robot-speed.png)
-		// This handles technologies that share the same asset file
+		// Fallback: handle technologies with number suffixes
+		// Some technologies use icons without number suffixes (e.g., worker-robot-speed-7 uses worker-robot-speed.png)
+		// Others use icons from lower-numbered versions (e.g., stronger-explosives-7 uses stronger-explosives-3.png)
 		const match = assetName.match(/^(.+)-(\d+)(\.png)$/);
 		if (match) {
-			const [, baseName, , extension] = match;
-			const fallbackAssetName = `${baseName}${extension}`;
+			const [, baseName, numberStr, extension] = match;
+			const originalNumber = parseInt(numberStr, 10);
 			
+			// First, try without any number suffix
+			const noSuffixAssetName = `${baseName}${extension}`;
 			for (const techPath of TECH_ASSET_PATHS) {
-				const assetFile = Bun.file(join(techPath, fallbackAssetName));
+				const assetFile = Bun.file(join(techPath, noSuffixAssetName));
 				if (await assetFile.exists()) {
 					return new Response(assetFile, {
 						headers: {
@@ -109,7 +112,24 @@ const server = Bun.serve({
 						}
 					});
 				}
-				console.log(`Tech asset ${assetName} not found at ${assetFile.name}`);
+				console.log(`Tech asset ${noSuffixAssetName} not found at ${assetFile.name}`);
+			}
+			
+			// Then, try all numbers from (originalNumber - 1) down to 1
+			for (let num = originalNumber - 1; num >= 1; num--) {
+				const numberedAssetName = `${baseName}-${num}${extension}`;
+				for (const techPath of TECH_ASSET_PATHS) {
+					const assetFile = Bun.file(join(techPath, numberedAssetName));
+					if (await assetFile.exists()) {
+						return new Response(assetFile, {
+							headers: {
+								'Access-Control-Allow-Origin': '*',
+								'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+							}
+						});
+					}
+					console.log(`Tech asset ${numberedAssetName} not found at ${assetFile.name}`);
+				}
 			}
 		}
 		
