@@ -89,6 +89,7 @@ const server = Bun.serve({
 					}
 				});
 			}
+			console.log(`Tech asset ${assetName} not found at ${assetFile.name}`);
 		}
 		
 		// Fallback: try stripping the number suffix (e.g., worker-robot-speed-7.png -> worker-robot-speed.png)
@@ -99,15 +100,16 @@ const server = Bun.serve({
 			const fallbackAssetName = `${baseName}${extension}`;
 			
 			for (const techPath of TECH_ASSET_PATHS) {
-				const fallbackAssetFile = Bun.file(join(techPath, fallbackAssetName));
-				if (await fallbackAssetFile.exists()) {
-					return new Response(fallbackAssetFile, {
+				const assetFile = Bun.file(join(techPath, fallbackAssetName));
+				if (await assetFile.exists()) {
+					return new Response(assetFile, {
 						headers: {
 							'Access-Control-Allow-Origin': '*',
 							'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
 						}
 					});
 				}
+				console.log(`Tech asset ${assetName} not found at ${assetFile.name}`);
 			}
 		}
 		
