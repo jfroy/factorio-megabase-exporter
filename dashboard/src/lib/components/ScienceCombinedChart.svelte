@@ -18,7 +18,6 @@
 	let chart: Chart | null = null;
 
 	// Filter out science packs with activity (production or consumption)
-	// Exclude science_normal (eSPM) as it's shown in the mini chart
 	function getActiveSciencePacks(history: any[]) {
 		if (!history.length) return new Set<string>();
 		
@@ -26,7 +25,7 @@
 		const lastEntry = history[history.length - 1];
 		
 		for (const key in lastEntry.data.science_packs.rate_1m) {
-			// Skip science_normal (eSPM)
+			// Skip science_normal (eSPM) - it will be added separately
 			if (key.startsWith('science_normal')) continue;
 			
 			const stats = lastEntry.data.science_packs.rate_1m[key];
@@ -55,6 +54,35 @@
 
 		// Aggregate data by science pack type (sum across all qualities)
 		const datasets: any[] = [];
+		
+		// First, add eSPM data (will use right Y-axis)
+		const espmData = $historyStore.map((entry) => {
+			const scienceNormalKey = 'science_normal';
+			if (entry.data.science_packs.rate_1m[scienceNormalKey]) {
+				return {
+					x: entry.timestamp,
+					y: entry.data.science_packs.rate_1m[scienceNormalKey].produced
+				};
+			}
+			return { x: entry.timestamp, y: 0 };
+		});
+
+		datasets.push({
+			label: 'eSPM',
+			data: espmData,
+			borderColor: '#ffa500',
+			backgroundColor: 'transparent',
+			borderWidth: 2,
+			tension: 0.4,
+			fill: false,
+			pointRadius: 0,
+			pointHoverRadius: 6,
+			pointHoverBorderWidth: 2,
+			pointHoverBorderColor: '#ffffff',
+			pointHoverBackgroundColor: '#ffa500',
+			spanGaps: false,
+			yAxisID: 'y1' // Use right Y-axis
+		});
 		
 		// Sort packs alphabetically
 		const sortedPacks = Array.from(activePacks).sort();
@@ -105,7 +133,8 @@
 				pointHoverBorderColor: '#ffffff',
 				pointHoverBackgroundColor: color,
 				borderDash: [], // solid line
-				spanGaps: false
+				spanGaps: false,
+				yAxisID: 'y' // Use left Y-axis
 			});
 
 			// Production dataset (dashed line)
@@ -122,7 +151,8 @@
 				pointHoverBorderColor: '#ffffff',
 				pointHoverBackgroundColor: color,
 				borderDash: [5, 5], // dashed line
-				spanGaps: false
+				spanGaps: false,
+				yAxisID: 'y' // Use left Y-axis
 			});
 		});
 
@@ -231,6 +261,7 @@
 									const value = dataPoint.formattedValue;
 									const color = dataset.borderColor;
 									const isProduced = label.includes('(Produced)');
+									const isESPM = label === 'eSPM';
 									
 									// Format value
 									const numValue = dataPoint.parsed.y;
@@ -243,10 +274,15 @@
 										formattedValue = numValue.toFixed(0) + '/m';
 									}
 									
-									// Create line indicator (solid or dashed)
-									const lineStyle = isProduced 
-										? `border-top: 2px dashed ${color}; width: 20px;`
-										: `border-top: 2px solid ${color}; width: 20px;`;
+									// Create line indicator (solid, dashed, or filled for eSPM)
+									let lineStyle;
+									if (isESPM) {
+										lineStyle = `background: ${color}; width: 20px; height: 10px; opacity: 0.5;`;
+									} else if (isProduced) {
+										lineStyle = `border-top: 2px dashed ${color}; width: 20px;`;
+									} else {
+										lineStyle = `border-top: 2px solid ${color}; width: 20px;`;
+									}
 									
 									innerHtml += '<div style="display: flex; align-items: center; gap: 8px; margin: 4px 0;">';
 									innerHtml += '<div style="' + lineStyle + '"></div>';
@@ -361,13 +397,43 @@
 						}
 					},
 					y: {
+						type: 'linear',
 						display: true,
+						position: 'left',
 						grid: {
 							color: 'rgba(255, 255, 255, 0.05)',
 							drawTicks: false
 						},
 						ticks: {
 							color: '#a0a0a0',
+							font: {
+								family: 'monospace',
+								size: 10
+							},
+							callback: function(value: any) {
+								if (value >= 1000000) {
+									return (value / 1000000).toFixed(1) + 'M';
+								} else if (value >= 1000) {
+									return (value / 1000).toFixed(0) + 'k';
+								}
+								return value;
+							}
+						},
+						border: {
+							display: false
+						}
+					},
+					y1: {
+						type: 'linear',
+						display: true,
+						position: 'right',
+						min: 0,
+						grid: {
+							drawOnChartArea: false, // Don't draw grid lines for right axis
+							drawTicks: false
+						},
+						ticks: {
+							color: '#ffa500', // Orange color to match eSPM
 							font: {
 								family: 'monospace',
 								size: 10

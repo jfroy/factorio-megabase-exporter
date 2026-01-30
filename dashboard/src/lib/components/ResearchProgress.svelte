@@ -3,7 +3,6 @@
 	import { formatTime, formatNumberWithCommas, prettifyResearchName } from '../utils/formatters';
 	import { getTechnologyAssetUrl } from '../utils/assets';
 	import { onMount } from 'svelte';
-	import MiniESPMChart from './MiniESPMChart.svelte';
 
 	let currentResearch = $derived($currentResearchStore);
 	let stats = $derived($statsStore);
@@ -198,11 +197,6 @@
 					</div>
 				{/if}
 			</div>
-			
-			<!-- Embedded eSPM Chart -->
-			<div class="espm-chart-section">
-				<MiniESPMChart />
-			</div>
 		</div>
 	{:else}
 		<div class="no-research">
@@ -389,13 +383,6 @@
 		font-size: 0.9rem;
 		font-weight: bold;
 		text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
-	}
-
-	.espm-chart-section {
-		margin-top: 0;
-		padding-top: 0;
-		max-width: 100%;
-		overflow: hidden;
 	}
 
 	.no-research {
