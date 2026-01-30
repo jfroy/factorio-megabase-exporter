@@ -14,16 +14,19 @@ A modern, real-time web dashboard for visualizing Factorio statistics exported b
 ### Setup
 
 1. Navigate to the dashboard directory:
+
    ```bash
    cd dashboard
    ```
 
 2. Install dependencies:
+
    ```bash
    bun install
    ```
 
 3. Build the dashboard:
+
    ```bash
    bun run build
    ```
