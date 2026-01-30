@@ -12,7 +12,6 @@ const TECH_ASSET_PATHS = [
 	join(FACTORIO_PATH, 'data', 'base', 'graphics', 'technology'),
 	join(FACTORIO_PATH, 'data', 'space-age', 'graphics', 'technology')
 ];
-const FAVICON_PATH = join(FACTORIO_PATH, 'data', 'core', 'graphics', 'factorio.png');
 const BUILD_DIR = join(import.meta.dir, 'build');
 
 let cachedStats: string | null = null;
@@ -60,49 +59,7 @@ const server = Bun.serve({
 			});
 		}
 
-		// Serve favicon from game data
-		if (url.pathname === '/favicon.png') {
-			const faviconFile = Bun.file(FAVICON_PATH);
-			if (await faviconFile.exists()) {
-				return new Response(faviconFile, {
-					headers: {
-						'Content-Type': 'image/png',
-						'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
-					}
-				});
-			}
-			return new Response('Favicon not found', { status: 404 });
-		}
-
-		// Serve PWA manifest
-		if (url.pathname === '/manifest.json') {
-			const manifestFile = Bun.file(join(import.meta.dir, 'static', 'manifest.json'));
-			if (await manifestFile.exists()) {
-				return new Response(manifestFile, {
-					headers: {
-						'Content-Type': 'application/json',
-						'Cache-Control': 'public, max-age=86400'
-					}
-				});
-			}
-			return new Response('Manifest not found', { status: 404 });
-		}
-
-		// Serve service worker
-		if (url.pathname === '/service-worker.js') {
-			const swFile = Bun.file(join(import.meta.dir, 'static', 'service-worker.js'));
-			if (await swFile.exists()) {
-				return new Response(swFile, {
-					headers: {
-						'Content-Type': 'application/javascript',
-						'Cache-Control': 'no-cache'
-					}
-				});
-			}
-			return new Response('Service worker not found', { status: 404 });
-		}
-
-	// API endpoint for technology assets
+		// API endpoint for technology assets
 	if (url.pathname.startsWith('/api/assets/technology/')) {
 		const assetName = url.pathname.replace('/api/assets/technology/', '');
 		

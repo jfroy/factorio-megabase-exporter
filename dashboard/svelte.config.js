@@ -17,16 +17,6 @@ const config = {
 		}),
 		paths: {
 			base: ''
-		},
-		prerender: {
-			handleHttpError: ({ path, referrer, message }) => {
-				// Ignore files served by the custom server at runtime
-				if (path === '/favicon.png' || path === '/manifest.json' || path === '/service-worker.js') {
-					return;
-				}
-				// Re-throw other errors
-				throw new Error(message);
-			}
 		}
 	}
 };
