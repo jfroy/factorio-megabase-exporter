@@ -45,8 +45,6 @@
 </script>
 
 <div class="rate-indicator">
-	<h3>Current Rates</h3>
-	
 	<div class="rates-grid">
 		{#each groupedPacks as pack}
 			<div class="rate-row">

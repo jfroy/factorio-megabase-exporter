@@ -478,7 +478,6 @@
 </script>
 
 <div class="science-chart">
-	<h3>Science Pack Production & Consumption</h3>
 	<div class="chart-container">
 		<canvas bind:this={canvas}></canvas>
 		{#if !$historyStore.length}

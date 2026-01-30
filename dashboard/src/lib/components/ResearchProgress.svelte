@@ -127,8 +127,6 @@
 
 <div class="research-progress">
 	{#if currentResearch}
-		<h3>Current Research</h3>
-		
 		<div class="content">
 			<div class="tech-info">
 				<div class="tech-header">
