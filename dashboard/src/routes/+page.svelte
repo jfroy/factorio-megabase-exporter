@@ -69,7 +69,7 @@
 
 	<!-- Main Content -->
 	<main class="main-content">
-		<!-- Left Column: Research & Chart -->
+		<!-- Left Column: Research & Chart & Alerts -->
 		<div class="left-column">
 			<div class="research-card">
 				<ResearchProgress />
@@ -77,18 +77,18 @@
 			<div class="chart-card">
 				<ScienceCombinedChart />
 			</div>
+			<div class="alerts-card">
+				<AlertsPanel />
+			</div>
 		</div>
 
-		<!-- Right Column: Rates & Queue & Alerts -->
+		<!-- Right Column: Rates & Queue -->
 		<div class="right-column">
 			<div class="rates-card">
 				<ScienceRateIndicator />
 			</div>
 			<div class="queue-card">
 				<ResearchQueue />
-			</div>
-			<div class="alerts-card">
-				<AlertsPanel />
 			</div>
 		</div>
 	</main>
