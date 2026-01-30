@@ -128,9 +128,7 @@
 
 <div class="research-progress">
 	{#if currentResearch}
-		<div class="header">
-			<h3>Current Research</h3>
-		</div>
+		<h3>Current Research</h3>
 		
 		<div class="content">
 			<div class="tech-info">
@@ -218,28 +216,26 @@
 		background: rgba(0, 0, 0, 0.4);
 		border: 1px solid rgba(255, 119, 0, 0.3);
 		border-radius: 4px;
-		overflow: hidden;
+		padding: 1rem;
 		height: 100%;
 		display: flex;
 		flex-direction: column;
+		box-sizing: border-box;
 		max-width: 100%;
-	}
-
-	.header {
-		border-bottom: 1px solid rgba(255, 119, 0, 0.3);
-		padding: 0.75rem 1rem;
+		overflow-x: hidden;
 	}
 
 	h3 {
-		margin: 0;
+		margin: 0 0 1rem 0;
 		color: #ff7700;
 		font-family: monospace;
 		font-size: 1.1rem;
 		text-align: center;
+		border-bottom: 1px solid rgba(255, 119, 0, 0.3);
+		padding-bottom: 0.5rem;
 	}
 
 	.content {
-		padding: 1rem;
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -414,17 +410,17 @@
 
 	/* Mobile optimizations */
 	@media (max-width: 768px) {
-		.content {
+		.research-progress {
 			padding: 0.75rem;
-			gap: 0.75rem;
-		}
-
-		.header {
-			padding: 0.5rem 0.75rem;
 		}
 
 		h3 {
 			font-size: 1rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.content {
+			gap: 0.75rem;
 		}
 
 		.tech-icon-wrapper {
@@ -456,8 +452,11 @@
 	}
 
 	@media (max-width: 480px) {
-		.content {
+		.research-progress {
 			padding: 0.5rem;
+		}
+
+		.content {
 			gap: 0.5rem;
 		}
 
