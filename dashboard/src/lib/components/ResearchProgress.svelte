@@ -217,16 +217,6 @@
 		overflow-x: hidden;
 	}
 
-	h3 {
-		margin: 0 0 1rem 0;
-		color: #ff7700;
-		font-family: monospace;
-		font-size: 1.1rem;
-		text-align: center;
-		border-bottom: 1px solid rgba(255, 119, 0, 0.3);
-		padding-bottom: 0.75rem;
-	}
-
 	.content {
 		display: flex;
 		flex-direction: column;
@@ -397,11 +387,6 @@
 	@media (max-width: 768px) {
 		.research-progress {
 			padding: 0.75rem;
-		}
-
-		h3 {
-			font-size: 1rem;
-			margin-bottom: 0.75rem;
 		}
 
 		.content {
