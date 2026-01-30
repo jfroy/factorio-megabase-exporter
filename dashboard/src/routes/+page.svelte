@@ -51,7 +51,7 @@
 					<span class="stat-value">{lastUpdate}</span>
 				</div>
 				<button class="refresh-btn" onclick={refreshStats}>
-					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+					<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
 						<path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
 						<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
 					</svg>
@@ -124,7 +124,7 @@
 	.header {
 		background: rgba(0, 0, 0, 0.5);
 		border-bottom: 2px solid rgba(255, 119, 0, 0.5);
-		padding: 1rem 2rem;
+		padding: 0.5rem 2rem;
 		backdrop-filter: blur(10px);
 		box-sizing: border-box;
 		width: 100%;
@@ -145,47 +145,48 @@
 	.title-section h1 {
 		color: #ff7700;
 		font-family: monospace;
-		font-size: 1.8rem;
+		font-size: 0.9rem;
 		margin: 0;
 		text-shadow: 0 0 10px rgba(255, 119, 0, 0.5);
 	}
 
 	.stats-section {
 		display: flex;
-		gap: 2rem;
+		gap: 1rem;
 		align-items: center;
 	}
 
 	.stat-item {
 		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
+		flex-direction: row;
+		gap: 0.5rem;
+		align-items: center;
 	}
 
 	.stat-label {
 		color: #a0a0a0;
 		font-family: monospace;
-		font-size: 0.75rem;
+		font-size: 0.65rem;
 	}
 
 	.stat-value {
 		color: #e0e0e0;
 		font-family: monospace;
-		font-size: 1rem;
+		font-size: 0.75rem;
 		font-weight: bold;
 	}
 
 	.refresh-btn {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 1rem;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
 		background: rgba(255, 119, 0, 0.2);
 		border: 1px solid rgba(255, 119, 0, 0.5);
 		border-radius: 4px;
 		color: #ff7700;
 		font-family: monospace;
-		font-size: 0.9rem;
+		font-size: 0.65rem;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -217,7 +218,7 @@
 		max-width: 1800px;
 		width: 100%;
 		margin: 0 auto;
-		padding: 2rem;
+		padding: 1rem;
 		display: grid;
 		grid-template-columns: 1fr 500px;
 		gap: 1.5rem;
