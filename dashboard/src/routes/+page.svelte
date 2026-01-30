@@ -79,13 +79,13 @@
 			</div>
 		</div>
 
-		<!-- Right Column: Queue & Rates & Alerts -->
+		<!-- Right Column: Rates & Queue & Alerts -->
 		<div class="right-column">
-			<div class="queue-card">
-				<ResearchQueue />
-			</div>
 			<div class="rates-card">
 				<ScienceRateIndicator />
+			</div>
+			<div class="queue-card">
+				<ResearchQueue />
 			</div>
 			<div class="alerts-card">
 				<AlertsPanel />
