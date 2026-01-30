@@ -504,7 +504,7 @@
 		font-size: 1.1rem;
 		text-align: center;
 		border-bottom: 1px solid rgba(255, 119, 0, 0.3);
-		padding-bottom: 0.5rem;
+		padding-bottom: 0.75rem;
 	}
 
 	.chart-container {

@@ -245,7 +245,7 @@
 		background: rgba(0, 0, 0, 0.4);
 		border: 1px solid rgba(255, 119, 0, 0.3);
 		border-radius: 8px;
-		padding: 1.5rem;
+		padding: 0.75rem 1rem 1rem 1rem;
 		min-height: 350px;
 		backdrop-filter: blur(5px);
 		box-sizing: border-box;
