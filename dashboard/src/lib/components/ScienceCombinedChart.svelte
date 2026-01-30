@@ -491,15 +491,16 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		max-height: 100%;
 		box-sizing: border-box;
 		max-width: 100%;
 		overflow: hidden;
 	}
 
 	.chart-container {
-		flex: 1;
 		width: 100%;
-		min-height: 300px;
+		height: 100%;
+		max-height: 100%;
 		position: relative;
 		box-sizing: border-box;
 		overflow: hidden;

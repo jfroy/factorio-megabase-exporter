@@ -160,7 +160,6 @@
 
 <style>
 	.dashboard {
-		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
 		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
@@ -168,6 +167,15 @@
 		max-width: 100vw;
 		overflow-x: hidden;
 		width: 100%;
+		min-height: 100vh;
+	}
+	
+	/* Fix for PWA standalone mode - use fixed height instead of min-height */
+	@media (display-mode: standalone) {
+		.dashboard {
+			height: 100vh;
+			min-height: unset;
+		}
 	}
 
 	/* Header */
@@ -321,11 +329,11 @@
 		border: 1px solid rgba(255, 119, 0, 0.3);
 		border-radius: 8px;
 		padding: 0.75rem 1rem 1rem 1rem;
-		min-height: 350px;
+		height: 400px;
 		backdrop-filter: blur(5px);
 		box-sizing: border-box;
 		min-width: 0;
-		overflow-x: hidden;
+		overflow: hidden;
 	}
 
 	.research-card {
