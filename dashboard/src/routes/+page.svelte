@@ -7,6 +7,7 @@
 	import ScienceRateIndicator from '../lib/components/ScienceRateIndicator.svelte';
 	import ResearchProgress from '../lib/components/ResearchProgress.svelte';
 	import ResearchQueue from '../lib/components/ResearchQueue.svelte';
+	import AlertsPanel from '../lib/components/AlertsPanel.svelte';
 	
 	import '../app.css';
 
@@ -78,13 +79,16 @@
 			</div>
 		</div>
 
-		<!-- Right Column: Queue & Rates -->
+		<!-- Right Column: Queue & Rates & Alerts -->
 		<div class="right-column">
 			<div class="queue-card">
 				<ResearchQueue />
 			</div>
 			<div class="rates-card">
 				<ScienceRateIndicator />
+			</div>
+			<div class="alerts-card">
+				<AlertsPanel />
 			</div>
 		</div>
 	</main>
@@ -278,6 +282,17 @@
 		border-radius: 8px;
 		backdrop-filter: blur(5px);
 		min-height: 300px;
+		box-sizing: border-box;
+		min-width: 0;
+		overflow-x: hidden;
+	}
+
+	.alerts-card {
+		background: rgba(0, 0, 0, 0.4);
+		border: 1px solid rgba(255, 119, 0, 0.3);
+		border-radius: 8px;
+		backdrop-filter: blur(5px);
+		min-height: 250px;
 		box-sizing: border-box;
 		min-width: 0;
 		overflow-x: hidden;

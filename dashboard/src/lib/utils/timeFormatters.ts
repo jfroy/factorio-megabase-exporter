@@ -44,6 +44,42 @@ export function formatRelativeTime(timestamp: number, now: number = Date.now()):
 }
 
 /**
+ * Format a timestamp as human-readable relative time (e.g., "5 minutes ago", "just now")
+ * @param timestamp Timestamp in milliseconds
+ * @param now Current time in milliseconds (defaults to Date.now())
+ * @returns Formatted relative time string
+ */
+export function formatRelativeTimeAgo(timestamp: number, now: number = Date.now()): string {
+	const secondsAgo = Math.round((now - timestamp) / 1000);
+	
+	// Future timestamps (shouldn't happen, but handle gracefully)
+	if (secondsAgo < 0) {
+		return 'just now';
+	}
+	
+	// Less than 1 minute
+	if (secondsAgo < 60) {
+		return 'just now';
+	}
+	
+	// Less than 1 hour
+	if (secondsAgo < 3600) {
+		const minutes = Math.floor(secondsAgo / 60);
+		return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+	}
+	
+	// Less than 1 day
+	if (secondsAgo < 86400) {
+		const hours = Math.floor(secondsAgo / 3600);
+		return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+	}
+	
+	// 1 day or more
+	const days = Math.floor(secondsAgo / 86400);
+	return days === 1 ? '1 day ago' : `${days} days ago`;
+}
+
+/**
  * Format a timestamp as 24-hour time (HH:mm:ss)
  * @param timestamp Timestamp in milliseconds
  * @returns Formatted 24-hour time string

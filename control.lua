@@ -103,6 +103,57 @@ local function get_research_info(force)
   return research_info
 end
 
+-- Build alert type mapping from defines (numeric ID to string name)
+local function build_alert_type_mapping()
+  local mapping = {}
+  for name, id in pairs(defines.alert_type) do
+    mapping[id] = name
+  end
+  return mapping
+end
+
+local ALERT_TYPE_NAMES = build_alert_type_mapping()
+
+-- Get all alerts for all players
+local function get_alerts()
+  local all_alerts = {}
+  
+  for _, player in pairs(game.connected_players) do
+    local player_alerts = player.get_alerts({})
+    
+    -- Iterate through surfaces
+    for surface_index, surface_alerts in pairs(player_alerts) do
+      local surface_name = game.surfaces[surface_index].name
+      
+      -- Iterate through alert types
+      for alert_type, alerts in pairs(surface_alerts) do
+        -- Iterate through individual alerts
+        for _, alert in ipairs(alerts) do
+          local alert_entry = {
+            tick = alert.tick,
+            type = ALERT_TYPE_NAMES[alert_type] or "unknown",
+            surface = surface_name
+          }
+          
+          -- Add target information if available
+          if alert.target then
+            alert_entry.target = alert.target.name
+          end
+          
+          -- Add message if available (custom alerts)
+          if alert.message then
+            alert_entry.message = alert.message
+          end
+          
+          table.insert(all_alerts, alert_entry)
+        end
+      end
+    end
+  end
+  
+  return all_alerts
+end
+
 -- Collect and export statistics
 local function export_statistics()
   -- Get the player force
@@ -115,7 +166,8 @@ local function export_statistics()
     timestamp = game.tick,
     game_time = game.ticks_played,
     science_packs = get_science_stats(player_force),
-    research = get_research_info(player_force)
+    research = get_research_info(player_force),
+    alerts = get_alerts()
   }
 
   -- Convert to JSON

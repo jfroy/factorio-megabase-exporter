@@ -1,6 +1,7 @@
 import { writable, derived } from 'svelte/store';
 import type { FactorioStats, ParsedSciencePack } from '../types/stats';
 import { getParsedSciencePacks } from '../types/stats';
+import { processAlerts } from './alertsStore';
 
 // Store for the raw stats data
 export const statsStore = writable<FactorioStats | null>(null);
@@ -79,6 +80,11 @@ async function fetchStats(): Promise<void> {
 		statsStore.set(data);
 		lastUpdateStore.set(Date.now());
 		errorStore.set(null);
+
+		// Process alerts
+		if (data.alerts && data.alerts.length > 0) {
+			processAlerts(data.alerts);
+		}
 
 		// Add to history
 		historyStore.update(history => {

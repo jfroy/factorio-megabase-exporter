@@ -9,6 +9,7 @@ A lightweight Factorio mod that exports key statistics about your factory to a J
 - **Quality support**: Tracks all quality levels
 - **Rate monitoring**: Provides both lifetime totals and 1-minute rates
 - **Research monitoring**: Tracks current research progress and research queue
+- **Alert tracking**: Monitors and logs all in-game alerts with deduplication
 - **Multi-surface support**: Aggregates statistics across all surfaces (planets and platforms)
 - **JSON export**: Outputs to `script-output/megabase-exporter/stats.json`
 - **Web Dashboard**: Real-time visualization dashboard (see [dashboard/](dashboard/))
@@ -204,11 +205,32 @@ The mod writes statistics to `script-output/megabase-exporter/stats.json` every 
         "level": 28
       }
     ]
-  }
+  },
+  "alerts": [
+    {
+      "tick": 317430599,
+      "type": "custom",
+      "surface": "vulcanus",
+      "target": "programmable-speaker",
+      "message": "NO LOVE"
+    }
+  ]
 }
 ```
 
 **Note**: The example above is abbreviated. The actual output includes all 12 science packs at all 5 quality levels for both `total` and `rate_1m` sections, plus the "science" eSPM special entity.
+
+### Alerts
+
+The mod captures all active alerts from the game and includes them in the JSON output. Each alert includes:
+
+- **tick**: The game tick when the alert was created
+- **type**: The alert type (e.g., `entity_destroyed`, `entity_under_attack`, `train_no_path`)
+- **surface**: The surface where the alert is occurring
+- **target**: (Optional) Target entity name
+- **message**: (Optional) Custom message for custom alerts
+
+The dashboard automatically deduplicates alerts, creating a persistent alert log that shows all unique alerts that have occurred.
 
 ## Compatibility
 

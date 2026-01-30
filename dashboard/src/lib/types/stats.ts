@@ -36,6 +36,45 @@ export interface ResearchQueue {
 	queue: ResearchItem[];
 }
 
+// Alert types - string names from Factorio's defines.alert_type
+export type AlertType = string;
+
+// Common alert type names for display labels
+export const ALERT_TYPE_LABELS: Record<string, string> = {
+	'entity_destroyed': 'Entity Destroyed',
+	'entity_under_attack': 'Under Attack',
+	'not_enough_construction_robots': 'Not Enough Robots',
+	'no_material_for_construction': 'No Construction Material',
+	'not_enough_repair_packs': 'Not Enough Repair Packs',
+	'turret_fire': 'Turret Fire',
+	'custom': 'Custom',
+	'no_storage': 'No Storage',
+	'train_out_of_fuel': 'Train Out of Fuel',
+	'fluid_mixing': 'Fluid Mixing',
+	'pipeline_overextended': 'Pipeline Overextended',
+	'no_roboport_storage': 'No Roboport Storage',
+	'train_no_path': 'Train No Path',
+	'collector_path_blocked': 'Collector Path Blocked',
+	'no_platform_storage': 'No Platform Storage',
+	'platform_tile_building_blocked': 'Platform Tile Building Blocked',
+	'turret_out_of_ammo': 'Turret Out of Ammo',
+	'unclaimed_cargo': 'Unclaimed Cargo'
+};
+
+// Get alert type display label
+export function getAlertTypeLabel(type: AlertType): string {
+	return ALERT_TYPE_LABELS[type] || type;
+}
+
+// Individual alert
+export interface Alert {
+	tick: number;
+	type: AlertType;
+	surface: string;
+	target?: string;
+	message?: string;
+}
+
 // Science pack data structure (flat keys with quality suffix)
 export type ScienceData = {
 	[key: string]: SciencePackStats;
@@ -50,6 +89,7 @@ export interface FactorioStats {
 		rate_1m: ScienceData;
 	};
 	research: ResearchQueue;
+	alerts: Alert[];
 }
 
 // Parsed science pack entry for easier component usage
