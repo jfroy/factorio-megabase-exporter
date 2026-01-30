@@ -86,7 +86,7 @@ else
     exit 1
 fi
 
-if grep -q 'apple-mobile-web-app-capable' "$BUILD_DIR/index.html"; then
+if grep -q 'apple-mobile-web-app-title' "$BUILD_DIR/index.html"; then
     echo "✅ iOS web app meta tags found"
 else
     echo "❌ iOS web app meta tags not found"
