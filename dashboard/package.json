@@ -18,7 +18,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "start": "bun run server.ts"
+    "start": "bun run server.ts",
+    "validate-pwa": "./validate-pwa.sh"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",

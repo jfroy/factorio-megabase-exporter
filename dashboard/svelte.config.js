@@ -20,8 +20,8 @@ const config = {
 		},
 		prerender: {
 			handleHttpError: ({ path, referrer, message }) => {
-				// Ignore favicon.png 404 during prerendering - it's served by the custom server at runtime
-				if (path === '/favicon.png') {
+				// Ignore files served by the custom server at runtime
+				if (path === '/favicon.png' || path === '/manifest.json' || path === '/service-worker.js') {
 					return;
 				}
 				// Re-throw other errors

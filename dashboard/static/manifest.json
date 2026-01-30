@@ -1,0 +1,19 @@
+{
+  "name": "Factorio Megabase Dashboard",
+  "short_name": "Megabase Dashboard",
+  "description": "Real-time monitoring dashboard for Factorio megabase",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#ff7700",
+  "orientation": "any",
+  "categories": ["games", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -74,6 +74,34 @@ const server = Bun.serve({
 			return new Response('Favicon not found', { status: 404 });
 		}
 
+		// Serve PWA manifest
+		if (url.pathname === '/manifest.json') {
+			const manifestFile = Bun.file(join(import.meta.dir, 'static', 'manifest.json'));
+			if (await manifestFile.exists()) {
+				return new Response(manifestFile, {
+					headers: {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'public, max-age=86400'
+					}
+				});
+			}
+			return new Response('Manifest not found', { status: 404 });
+		}
+
+		// Serve service worker
+		if (url.pathname === '/service-worker.js') {
+			const swFile = Bun.file(join(import.meta.dir, 'static', 'service-worker.js'));
+			if (await swFile.exists()) {
+				return new Response(swFile, {
+					headers: {
+						'Content-Type': 'application/javascript',
+						'Cache-Control': 'no-cache'
+					}
+				});
+			}
+			return new Response('Service worker not found', { status: 404 });
+		}
+
 	// API endpoint for technology assets
 	if (url.pathname.startsWith('/api/assets/technology/')) {
 		const assetName = url.pathname.replace('/api/assets/technology/', '');

@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { statsStore, lastUpdateStore, errorStore, startStatsPolling, refreshStats } from '../lib/stores/statsStore';
 	import { formatTime, formatTimestamp } from '../lib/utils/formatters';
+	import { registerServiceWorker, isFullscreenSupported, isFullscreen, toggleFullscreen } from '../lib/pwa';
 	
 	import ScienceCombinedChart from '../lib/components/ScienceCombinedChart.svelte';
 	import ScienceRateIndicator from '../lib/components/ScienceRateIndicator.svelte';
@@ -12,20 +13,54 @@
 	import '../app.css';
 
 	let stopPolling = $state<(() => void) | null>(null);
+	let fullscreenEnabled = $state(false);
+	let isInFullscreen = $state(false);
 
 	let gameTime = $derived($statsStore ? formatTime($statsStore.game_time) : '--');
 	let lastUpdate = $derived(formatTimestamp($lastUpdateStore));
 	let hasError = $derived($errorStore !== null);
 
+	// Update fullscreen state
+	function updateFullscreenState() {
+		isInFullscreen = isFullscreen();
+	}
+
+	async function handleFullscreenToggle() {
+		try {
+			await toggleFullscreen();
+			updateFullscreenState();
+		} catch (error) {
+			console.error('Fullscreen toggle failed:', error);
+		}
+	}
+
 	onMount(() => {
+		// Register service worker for PWA
+		registerServiceWorker();
+		
 		// Start polling for stats every 5 seconds
 		stopPolling = startStatsPolling(5000);
+		
+		// Check fullscreen support
+		fullscreenEnabled = isFullscreenSupported();
+		
+		// Listen for fullscreen changes
+		document.addEventListener('fullscreenchange', updateFullscreenState);
+		document.addEventListener('webkitfullscreenchange', updateFullscreenState);
+		document.addEventListener('mozfullscreenchange', updateFullscreenState);
+		document.addEventListener('msfullscreenchange', updateFullscreenState);
 	});
 
 	onDestroy(() => {
 		if (stopPolling) {
 			stopPolling();
 		}
+		
+		// Remove fullscreen listeners
+		document.removeEventListener('fullscreenchange', updateFullscreenState);
+		document.removeEventListener('webkitfullscreenchange', updateFullscreenState);
+		document.removeEventListener('mozfullscreenchange', updateFullscreenState);
+		document.removeEventListener('msfullscreenchange', updateFullscreenState);
 	});
 </script>
 
@@ -57,6 +92,21 @@
 					</svg>
 					Refresh
 				</button>
+				{#if fullscreenEnabled}
+					<button class="fullscreen-btn" onclick={handleFullscreenToggle} title={isInFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}>
+						{#if isInFullscreen}
+							<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+								<path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5zM0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zm10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4z"/>
+							</svg>
+							Exit Fullscreen
+						{:else}
+							<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+								<path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+							</svg>
+							Fullscreen
+						{/if}
+					</button>
+				{/if}
 			</div>
 		</div>
 		
@@ -197,6 +247,30 @@
 	}
 
 	.refresh-btn:active {
+		transform: scale(0.95);
+	}
+
+	.fullscreen-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		background: rgba(0, 119, 255, 0.2);
+		border: 1px solid rgba(0, 119, 255, 0.5);
+		border-radius: 4px;
+		color: #0077ff;
+		font-family: monospace;
+		font-size: 0.65rem;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.fullscreen-btn:hover {
+		background: rgba(0, 119, 255, 0.3);
+		border-color: rgba(0, 119, 255, 0.7);
+	}
+
+	.fullscreen-btn:active {
 		transform: scale(0.95);
 	}
 
@@ -423,6 +497,11 @@
 		}
 
 		.refresh-btn {
+			padding: 0.35rem 0.6rem;
+			font-size: 0.8rem;
+		}
+
+		.fullscreen-btn {
 			padding: 0.35rem 0.6rem;
 			font-size: 0.8rem;
 		}
