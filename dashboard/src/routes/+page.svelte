@@ -146,7 +146,7 @@
 	<!-- Footer -->
 	<footer class="footer">
 		<div class="footer-content">
-			<span>Factorio Megabase Dashboard <span class="git-hash">({__GIT_HASH__})</span></span>
+			<span class="git-hash">({__GIT_HASH__})</span>
 			<span class="separator">•</span>
 			<a href="https://www.factorio.com/" target="_blank" rel="noopener noreferrer">Factorio</a>
 			<span class="separator">•</span>
