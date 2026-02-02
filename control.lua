@@ -123,7 +123,8 @@ local function get_alerts()
     
     -- Iterate through surfaces
     for surface_index, surface_alerts in pairs(player_alerts) do
-      local surface_name = game.surfaces[surface_index].name
+      local surface = game.surfaces[surface_index]
+      local surface_name = surface.name
       
       -- Iterate through alert types
       for alert_type, alerts in pairs(surface_alerts) do
@@ -134,6 +135,11 @@ local function get_alerts()
             type = ALERT_TYPE_NAMES[alert_type] or "unknown",
             surface = surface_name
           }
+
+          -- Use platform name if relevant
+          if surface.platform then
+            alert_entry.surface = surface.platform.name
+          end
           
           -- Add target information if available
           if alert.target then
