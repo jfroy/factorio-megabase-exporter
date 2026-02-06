@@ -42,8 +42,8 @@
 			return minutesAgo > 0 ? `-${minutesAgo.toFixed(1)}m` : 'now';
 		});
 
-		// Aggregate data by science pack type (sum across all qualities)
-		const datasets: any[] = [];
+		// Build expected dataset structure
+		const expectedDatasets: Array<{label: string, data: any[], config: any}> = [];
 		
 		activePacks.forEach((packName) => {
 			const data = $historyStore.map((entry) => {
@@ -56,25 +56,45 @@
 				return total;
 			});
 
-		const color = getScienceColor(packName as SciencePackType);
-		
-		datasets.push({
-			label: getSciencePackShortName(packName),
-			data,
-				borderColor: color,
-				backgroundColor: color + '20',
-				borderWidth: 2,
-				tension: 0.4,
-				pointRadius: 0,
-				pointHoverRadius: 6,
-				pointHoverBorderWidth: 2,
-				pointHoverBorderColor: '#ffffff',
-				pointHoverBackgroundColor: color
+			const color = getScienceColor(packName as SciencePackType);
+			
+			expectedDatasets.push({
+				label: getSciencePackShortName(packName),
+				data,
+				config: {
+					borderColor: color,
+					backgroundColor: color + '20',
+					borderWidth: 2,
+					tension: 0.4,
+					pointRadius: 0,
+					pointHoverRadius: 6,
+					pointHoverBorderWidth: 2,
+					pointHoverBorderColor: '#ffffff',
+					pointHoverBackgroundColor: color
+				}
 			});
 		});
 
+		// Update or create datasets to match expected structure
+		const datasetsByLabel = new Map(chart.data.datasets.map(ds => [ds.label || '', ds]));
+		
 		chart.data.labels = labels;
-		chart.data.datasets = datasets;
+		chart.data.datasets = expectedDatasets.map(expected => {
+			const existing = datasetsByLabel.get(expected.label);
+			if (existing) {
+				// Update existing dataset's data in place
+				existing.data = expected.data;
+				return existing;
+			} else {
+				// Create new dataset with data and config
+				return {
+					label: expected.label,
+					data: expected.data,
+					...expected.config
+				};
+			}
+		});
+		
 		chart.update('none'); // Update without animation
 	}
 

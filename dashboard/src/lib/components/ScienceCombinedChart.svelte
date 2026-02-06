@@ -52,8 +52,8 @@
 		// Only annotate significant gaps (> 2 minutes)
 		const significantGaps = getSignificantGaps(allGaps, 120000);
 
-		// Aggregate data by science pack type (sum across all qualities)
-		const datasets: any[] = [];
+		// Build expected dataset structure
+		const expectedDatasets: Array<{label: string, data: any[], config: any}> = [];
 		
 		// First, add eSPM data (will use right Y-axis)
 		const espmData = $historyStore.map((entry) => {
@@ -67,21 +67,23 @@
 			return { x: entry.timestamp, y: 0 };
 		});
 
-		datasets.push({
+		expectedDatasets.push({
 			label: 'eSPM',
 			data: espmData,
-			borderColor: '#ffa500',
-			backgroundColor: 'transparent',
-			borderWidth: 2,
-			tension: 0.4,
-			fill: false,
-			pointRadius: 0,
-			pointHoverRadius: 6,
-			pointHoverBorderWidth: 2,
-			pointHoverBorderColor: '#ffffff',
-			pointHoverBackgroundColor: '#ffa500',
-			spanGaps: false,
-			yAxisID: 'y1' // Use right Y-axis
+			config: {
+				borderColor: '#ffa500',
+				backgroundColor: 'transparent',
+				borderWidth: 2,
+				tension: 0.4,
+				fill: false,
+				pointRadius: 0,
+				pointHoverRadius: 6,
+				pointHoverBorderWidth: 2,
+				pointHoverBorderColor: '#ffffff',
+				pointHoverBackgroundColor: '#ffa500',
+				spanGaps: false,
+				yAxisID: 'y1' // Use right Y-axis
+			}
 		});
 		
 		// Sort packs alphabetically
@@ -116,44 +118,67 @@
 				};
 			});
 
-		const color = getScienceColor(packName as SciencePackType);
-		const prettyName = getSciencePackShortName(packName);
-		
-		// Consumption dataset (solid line)
-		datasets.push({
-			label: `${prettyName} (Consumed)`,
-			data: consumptionData,
-				borderColor: color,
-				backgroundColor: color + '20',
-				borderWidth: 2,
-				tension: 0.4,
-				pointRadius: 0,
-				pointHoverRadius: 6,
-				pointHoverBorderWidth: 2,
-				pointHoverBorderColor: '#ffffff',
-				pointHoverBackgroundColor: color,
-				borderDash: [], // solid line
-				spanGaps: false,
-				yAxisID: 'y' // Use left Y-axis
+			const color = getScienceColor(packName as SciencePackType);
+			const prettyName = getSciencePackShortName(packName);
+			
+			// Consumption dataset (solid line)
+			expectedDatasets.push({
+				label: `${prettyName} (Consumed)`,
+				data: consumptionData,
+				config: {
+					borderColor: color,
+					backgroundColor: color + '20',
+					borderWidth: 2,
+					tension: 0.4,
+					pointRadius: 0,
+					pointHoverRadius: 6,
+					pointHoverBorderWidth: 2,
+					pointHoverBorderColor: '#ffffff',
+					pointHoverBackgroundColor: color,
+					borderDash: [], // solid line
+					spanGaps: false,
+					yAxisID: 'y' // Use left Y-axis
+				}
 			});
 
 			// Production dataset (dashed line)
-			datasets.push({
+			expectedDatasets.push({
 				label: `${prettyName} (Produced)`,
 				data: productionData,
-				borderColor: color,
-				backgroundColor: 'transparent',
-				borderWidth: 2,
-				tension: 0.4,
-				pointRadius: 0,
-				pointHoverRadius: 6,
-				pointHoverBorderWidth: 2,
-				pointHoverBorderColor: '#ffffff',
-				pointHoverBackgroundColor: color,
-				borderDash: [5, 5], // dashed line
-				spanGaps: false,
-				yAxisID: 'y' // Use left Y-axis
+				config: {
+					borderColor: color,
+					backgroundColor: 'transparent',
+					borderWidth: 2,
+					tension: 0.4,
+					pointRadius: 0,
+					pointHoverRadius: 6,
+					pointHoverBorderWidth: 2,
+					pointHoverBorderColor: '#ffffff',
+					pointHoverBackgroundColor: color,
+					borderDash: [5, 5], // dashed line
+					spanGaps: false,
+					yAxisID: 'y' // Use left Y-axis
+				}
 			});
+		});
+
+		// Update or create datasets to match expected structure
+		const datasetsByLabel = new Map(chart.data.datasets.map(ds => [ds.label || '', ds]));
+		
+		chart.data.datasets = expectedDatasets.map(expected => {
+			const existing = datasetsByLabel.get(expected.label);
+			if (existing) {
+				// Update existing dataset's data in place
+				existing.data = expected.data;
+				return existing;
+			} else {
+				// Create new dataset with data and config
+				return {
+					label: expected.label,
+					data: expected.data,
+					...expected.config
+				};
+			}
 		});
 
 		// Create gap annotations
@@ -182,8 +207,6 @@
 				}
 			};
 		});
-
-		chart.data.datasets = datasets;
 
 		// Update annotations
 		// @ts-ignore - annotation plugin types
