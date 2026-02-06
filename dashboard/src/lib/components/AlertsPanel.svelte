@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { recentAlertsStore, alertCountsByType, clearAlerts } from '../stores/alertsStore';
 	import { formatRelativeTimeAgo } from '../utils/timeFormatters';
 	import { getAlertTypeLabel, ALERT_TYPE_LABELS, type AlertType } from '../types/stats';
 
 	let showDetails = $state(false);
 	let selectedType = $state<AlertType | 'all'>('all');
+	let currentTime = $state(Date.now());
 
 	const alertTypeColors: Record<string, string> = {
 		'entity_destroyed': '#ff4444',
@@ -38,6 +40,15 @@
 	function getAlertTypeColor(type: AlertType): string {
 		return alertTypeColors[type] || '#888888';
 	}
+
+	// Update currentTime every 10 seconds to refresh relative time displays
+	onMount(() => {
+		const interval = setInterval(() => {
+			currentTime = Date.now();
+		}, 10000); // Update every 10 seconds
+
+		return () => clearInterval(interval);
+	});
 
 </script>
 
@@ -89,7 +100,7 @@
 					<div class="alert-item" style="--alert-color: {getAlertTypeColor(alert.type)}">
 						<div class="alert-header">
 							<span class="alert-type">{getAlertTypeLabel(alert.type)}</span>
-							<span class="alert-time">{formatRelativeTimeAgo(alert.firstSeen)}</span>
+							<span class="alert-time">{formatRelativeTimeAgo(alert.firstSeen, currentTime)}</span>
 						</div>
 						<div class="alert-details">
 							{#if alert.target}
