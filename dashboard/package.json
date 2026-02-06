@@ -18,6 +18,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
     "start": "bun run server.ts",
     "validate-pwa": "./validate-pwa.sh"
   },
@@ -27,10 +29,12 @@
     "@types/bun": "latest",
     "@types/chartjs-plugin-annotation": "^1.0.0",
     "@types/node": "^25.0.10",
+    "@vitest/ui": "^4.0.18",
     "svelte": "^5.48.4",
     "svelte-check": "^4.3.5",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "chart.js": "^4.5.1",

@@ -112,6 +112,3 @@ describe('Alert Hashing', () => {
 		expect(hashAlert(alert1)).not.toBe(hashAlert(alert2));
 	});
 });
-});
-});
-});
